@@ -1,0 +1,61 @@
+library(shiny)
+library(tidyverse)
+library(ggplot2)
+setwd("~/Documents/Projects/Visualisation")
+source("plot.R")
+
+ui <- fluidPage(
+  titlePanel("RNA-Seq Visualisation"),
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Upload your node tables (.csv) and gene counts (.csv)"),
+      fileInput("file1", "Choose CSV File",
+                multiple = TRUE,
+                accept = c("text/csv",
+                           "text/comma-separated-values,text/plain",
+                           ".csv")),
+      uiOutput("selectfile"),
+      numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 20),
+      selectInput("regulation", "Filter by regulated pathways:", 
+                  c("all", "upregulated", "downregulated"), selected = "None"),
+      sliderInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
+      sliderInput("nodesize", "Filter by node size:", min = 0, max = 1000, value = 1000),
+      textInput("pathway", "Filter by key word:", "e.g. mitochondria"),
+      actionButton("button", "Go!"),
+    ),
+    mainPanel(
+      plotOutput("plot1"),
+      tableOutput("list")
+      #tableOutput("counts")
+      
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+ output$selectfile <- renderUI({
+    if(is.null(input$file1)) {return()}
+    list(hr(), 
+         helpText("Select the file you want to analyse"),
+         selectInput("Select", "Select File", choices=input$file1$name)
+    )
+  })
+  
+  data <- eventReactive(input$button,{
+    read.csv(input$file1$datapath[input$file1$name==input$Select]) %>%
+      arrange(desc(NES))
+  })
+  
+  output$counts <- renderTable({
+    req(input$file1)
+    df <- read.csv(input$file1$datapath[input$file1$name==input$Select]) %>%
+      arrange(desc(NES))
+    return(head(df))
+  })
+ 
+  output$plot1 <-  renderPlot({plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway)})
+  output$list <- renderTable(data())
+}
+
+shinyApp(ui = ui, server = server)
