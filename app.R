@@ -20,12 +20,13 @@ ui <- fluidPage(
                   c("all", "upregulated", "downregulated"), selected = "None"),
       sliderInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
       sliderInput("nodesize", "Filter by node size:", min = 0, max = 1000, value = 1000),
-      textInput("pathway", "Filter by key word:", "e.g. mitochondria"),
+      textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),
       actionButton("button", "Go!"),
     ),
     mainPanel(
       plotOutput("plot1"),
-      tableOutput("list")
+      downloadButton("export", "Save")
+      #tableOutput("list")
       #tableOutput("counts")
       
     )
@@ -38,8 +39,7 @@ server <- function(input, output) {
     if(is.null(input$file1)) {return()}
     list(hr(), 
          helpText("Select the file you want to analyse"),
-         selectInput("Select", "Select File", choices=input$file1$name)
-    )
+         selectInput("Select", "Select File", choices=input$file1$name))
   })
   
   data <- eventReactive(input$button,{
@@ -56,6 +56,13 @@ server <- function(input, output) {
  
   output$plot1 <-  renderPlot({plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway)})
   output$list <- renderTable(data())
+  
+  output$export <- downloadHandler(
+    filename = "plot.pdf",
+    content = function(file){
+      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
+  })
+  
 }
 
 shinyApp(ui = ui, server = server)
