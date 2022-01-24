@@ -25,7 +25,7 @@ plotNode <- function(id, n, reg, pval, size, term) {
 
  dataPlot$GS_DESCR = factor(dataPlot$GS_DESCR, levels=dataPlot[order(dataPlot$NES), "GS_DESCR"])
  
- if(term == "e.g. mitochondria") {
+ if(term == "") {
    dataPlot <- dataPlot
    } else {
     key_values = grep(term,dataPlot$GS_DESCR)
