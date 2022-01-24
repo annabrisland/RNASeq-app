@@ -9,31 +9,54 @@ source("plot.R")
 
 ui <- fluidPage(
   titlePanel("RNA-Seq Visualisation"),
-  sidebarLayout(
-    sidebarPanel(
-      helpText("Upload your node tables (.csv) and gene counts (.csv)"),
-      fileInput("file1", "Choose CSV File",
-                multiple = TRUE,
-                accept = c("text/csv",
-                           "text/comma-separated-values,text/plain",
-                           ".csv")),
-      uiOutput("selectfile"),
-      numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 20),
-      selectInput("regulation", "Filter by regulated pathways:", 
-                  c("all", "upregulated", "downregulated"), selected = "None"),
-      sliderInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
-      sliderInput("nodesize", "Filter by node size:", min = 0, max = 1000, value = 1000),
-      textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),
-      actionButton("button", "Go!"),
-    ),
-    mainPanel(
-      plotOutput("plot1"),
-      downloadButton("export", "Save")
-      #tableOutput("list")
-      #tableOutput("counts")
-      
-    )
-  )
+  fluidRow(
+    
+    
+    fluidRow(column(width = 5,offset = 1, #opening the user input space
+                    helpText("Upload your node tables (.csv) and gene counts (.csv)"),
+                    fileInput("file1", "Choose CSV File",
+                              multiple = TRUE,
+                              accept = c("text/csv",
+                                         "text/comma-separated-values,text/plain",
+                                         ".csv")),
+                    uiOutput("selectfile"),
+                    actionButton("button", "Go!"),
+                    h4("  "),
+                    
+                    
+                    
+                    
+                    
+                    tabsetPanel(type= "pills", #opening tabs
+                                tabPanel("Pathway Enrichment", #tab1
+                                         
+                                         numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 20),
+                                         selectInput("regulation", "Filter by regulated pathways:", 
+                                                     c("all", "upregulated", "downregulated"), selected = "None"),
+                                         sliderInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
+                                         sliderInput("nodesize", "Filter by node size:", min = 0, max = 1000, value = 1000),
+                                         textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),
+                                         
+                                         
+                                ),
+                                tabPanel("DEG", #tab2
+                                         
+                                         
+                                )
+                                
+                    ), # closing tabs
+    ), # closing the user input space
+    
+    
+    column(width = 6, #opening the plotting space
+           plotOutput("plot1"),
+           downloadButton("export", "Save")
+           #tableOutput("list")
+           #tableOutput("counts")
+           
+     ) #closing fluid row 2
+    ) #closing fluid row 1
+ ) #closing fluid page
 )
 
 server <- function(input, output) {
