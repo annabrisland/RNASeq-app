@@ -4,39 +4,40 @@ library("ggplot2")
 
 
 
-plotNode <- function(id, n, reg, pval, size, term) {
+plotNode <- function(id, n, reg, pval, size1, size2, term) {
+  
+  if(term == "") {
+    dataPlot <- id
+  } else {
+    key_values = grep(term,id$GS_DESCR)
+    dataPlot = id[key_values,]
+  }
   
   if(reg == "upregulated") {
-  dataPlot <- id %>%
+  dataPlot <- dataPlot %>%
     filter(NES>=0)
   } else if(reg == "downregulated") {
-    dataPlot <- id %>%
+    dataPlot <- dataPlot %>%
       filter(NES<=0)
   } else if(reg == "all") {
-    dataPlot <- id
+    dataPlot <- dataPlot
   }
   
  dataPlot <- dataPlot %>%
    filter(pvalue <= pval) %>%
-   filter(gs_size <= size)
+   filter(gs_size >= size1) %>%
+   filter(gs_size <= size2)
  
  dataPlot <- dataPlot %>%
    slice_max(order_by = NES, n = n)
 
  dataPlot$GS_DESCR = factor(dataPlot$GS_DESCR, levels=dataPlot[order(dataPlot$NES), "GS_DESCR"])
  
- if(term == "") {
-   dataPlot <- dataPlot
-   } else {
-    key_values = grep(term,dataPlot$GS_DESCR)
-    dataPlot = dataPlot[key_values,]
-   }
-  
   return(
         ggplot(dataPlot,aes(x=NES,y=GS_DESCR,color = pvalue)) +
           geom_point(aes(size = gs_size)) +
           theme_bw() +
-          theme(text = element_text(size=7), axis.text.y = element_text(angle = 0)) +
+          theme(text = element_text(size=13), axis.text.y = element_text(angle = 0, size = 9.5)) +
           labs(y="GO terms",x="Escore", size="gene set size", colour = "P value",
                title = paste("Top", n, reg, "Pathways", sep = " ")) +
           scale_color_gradient(low = "blue", high = "red") +
