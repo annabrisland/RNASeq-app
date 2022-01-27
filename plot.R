@@ -41,7 +41,7 @@ plotNode <- function(id, n, reg, pval, size1, size2, term) {
           labs(y="GO terms",x="Escore", size="gene set size", colour = "P value",
                title = paste("Top", n, reg, "Pathways", sep = " ")) +
           scale_color_gradient(low = "blue", high = "red") +
-          scale_y_discrete(labels = function(y) str_wrap(y, width =27)) +
+          scale_y_discrete(labels = function(y) str_wrap(y, width =50)) +
           scale_color_gradient(low = "blue", high = "red")
         )
       

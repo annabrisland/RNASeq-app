@@ -1,16 +1,16 @@
 library(shiny)
 library(tidyverse)
 library(ggplot2)
-setwd("~/Documents/Projects/Visualisation")
+setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
-
+source("plotgene.R")
 ui <- fluidPage(
   titlePanel("RNA-Seq Visualisation"),
   fluidRow(
     
     
-    fluidRow(column(width = 5,offset = 1, #opening the user input space
+    fluidRow(column(width = 2,offset = 1, #opening the user input space
                     helpText("Upload your node tables (.csv) and gene counts (.csv)"),
                     fileInput("file1", "Choose CSV File",
                               multiple = TRUE,
@@ -34,6 +34,7 @@ ui <- fluidPage(
                                     
                                 ),
                                 tabPanel("DEG", #tab2
+                                           textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
                                          
                                          
                                 )
@@ -41,11 +42,14 @@ ui <- fluidPage(
     ), # closing the user input space
     
     
-    column(width = 6, #opening the plotting space
+    column(width = 8, #opening the plotting space
            plotOutput("plot1"),
            downloadButton("exportplot", "Save plot"),
            tableOutput("table1"),
-           downloadButton("exporttable", "Save table")
+           downloadButton("exporttable", "Save table"),
+           plotOutput("plot2"),
+           tableOutput("counts"),
+           
            
     ) #closing fluid row 2
     ) #closing fluid row 1
@@ -62,19 +66,25 @@ server <- function(input, output) {
   })
   
   data <- eventReactive(input$button,{
-    read.csv(input$file1$datapath[input$file1$name==input$Select]) %>%
-      arrange(desc(NES))
+    read.csv(input$file1$datapath[input$file1$name==input$Select])
   })
   
   output$counts <- renderTable({
     req(input$file1)
-    df <- read.csv(input$file1$datapath[input$file1$name==input$Select]) %>%
-      arrange(desc(NES))
+    df <- read.csv(input$file1$datapath[input$file1$name==input$Select])
     return(head(df))
   })
   
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
+  })
+  
+  output$plot2 <-  renderPlot({
+    
+    subdata = normalized_counts_long %>%
+      filter(gene_name == "CNAG_0001")
+    
+    plotgene(data(), input$gene_name)
   })
   
   output$table1 <- renderTable({
