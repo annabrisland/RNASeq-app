@@ -31,10 +31,10 @@ ui <- fluidPage(
                                          numericInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
                                          sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
                                          textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),
-                                    
+                                         
                                 ),
                                 tabPanel("DEG", #tab2
-                                           textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
+                                         textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
                                          
                                          
                                 )
@@ -100,4 +100,3 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
-
