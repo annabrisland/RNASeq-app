@@ -2,14 +2,16 @@ library(shiny)
 library(tidyverse)
 library(ggplot2)
 library(shinythemes)
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
 
 ui <- fluidPage(
   titlePanel("RNA-Seq Visualisation"),
-  theme = shinytheme("superhero"),
+  theme = shinytheme("flatly"),
   fluidRow(
     
     
