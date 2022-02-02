@@ -29,9 +29,10 @@ subdata$cond = c("24h_glucose","24h_glucose","24h_glucose","24h_glucose malate",
     
     
 return(     
-  ggplot(subdata,aes(x=cond, y= value,fill = cond))+
-    geom_boxplot(alpha = 0.5)+
-    geom_jitter(aes(color = cond),size = 3)+
+  ggplot(subdata,aes(x=cond, y= as.numeric(value),fill = cond))+
+    geom_point()+
+    geom_boxplot()+
+    geom_jitter(aes(color = "black"),size = 4)+
     ggtitle(geneid)+
     theme_bw()+
     labs(y="Normalized read count")+

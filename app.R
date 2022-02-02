@@ -1,30 +1,35 @@
 library(shiny)
 library(tidyverse)
 library(ggplot2)
+library(shinythemes)
 setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
+
 ui <- fluidPage(
   titlePanel("RNA-Seq Visualisation"),
+  theme = shinytheme("superhero"),
   fluidRow(
     
     
     fluidRow(column(width = 2,offset = 1, #opening the user input space
+                    
+                    
+                    tabsetPanel(type= "pills", #opening tabs
+                                tabPanel("Pathway Enrichment", #tab1
+
                     helpText("Upload your node tables (.csv) and gene counts (.csv)"),
                     fileInput("file1", "Choose CSV File",
                               multiple = TRUE,
                               accept = c("text/csv",
                                          "text/comma-separated-values,text/plain",
                                          ".csv")),
-                    uiOutput("selectfile"),
+                    uiOutput("selectfile"),               
                     actionButton("button", "Go!"),
-                    h4("  "),
-                    
-                    
-                    tabsetPanel(type= "pills", #opening tabs
-                                tabPanel("Pathway Enrichment", #tab1
+                    h4("  "),             
                                          
+                                   
                                          numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
                                          selectInput("regulation", "Filter by regulated pathways:", 
                                                      c("all", "upregulated", "downregulated"), selected = "None"),
@@ -34,21 +39,30 @@ ui <- fluidPage(
                                          
                                 ),
                                 tabPanel("DEG", #tab2
+                                         
+                                         
+                                         helpText("Upload your gene counts (.csv)"),
+                                         fileInput("file2", "Choose CSV File",
+                                                   multiple = TRUE,
+                                                   accept = c("text/csv",
+                                                              "text/comma-separated-values,text/plain",
+                                                              ".csv")),
+                                         uiOutput("selectfile2"),               
+                                         actionButton("button2", "Go!"),
+                                         h4("  "),                    
                                          textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
-                                         
-                                         
                                 )
                     ), # closing tabs
     ), # closing the user input space
     
     
-    column(width = 8, #opening the plotting space
-           plotOutput("plot1"),
-           downloadButton("exportplot", "Save plot"),
-           tableOutput("table1"),
-           downloadButton("exporttable", "Save table"),
-           plotOutput("plot2"),
-           tableOutput("counts"),
+      column(width = 8, #opening the plotting space
+             plotOutput("plot1"),
+             downloadButton("exportplot", "Save plot"),
+             tableOutput("table1"),
+             downloadButton("exporttable", "Save table"),
+             plotOutput("plot2"),
+             tableOutput("counts"),
            
            
     ) #closing fluid row 2
@@ -65,8 +79,19 @@ server <- function(input, output) {
          selectInput("Select", "Select File", choices=input$file1$name))
   })
   
+  output$selectfile2 <- renderUI({
+    if(is.null(input$file1)) {return()}
+    list(hr(), 
+         helpText("Select the file you want to analyse"),
+         selectInput("Select", "Select File", choices=input$file2$name))
+  })
+  
   data <- eventReactive(input$button,{
     read.csv(input$file1$datapath[input$file1$name==input$Select])
+  })
+  
+  data2 <- eventReactive(input$button2,{
+    read.csv(input$file2$datapath[input$file2$name==input$Select])
   })
   
   output$counts <- renderTable({
@@ -81,10 +106,7 @@ server <- function(input, output) {
   
   output$plot2 <-  renderPlot({
     
-    subdata = normalized_counts_long %>%
-      filter(gene_name == "CNAG_0001")
-    
-    plotgene(data(), input$gene_name)
+    plotgene(data2(), input$gene_name)
   })
   
   output$table1 <- renderTable({
