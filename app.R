@@ -2,6 +2,7 @@ library(shiny)
 library(tidyverse)
 library(ggplot2)
 library(shinythemes)
+library(DT)
 
 setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
@@ -61,10 +62,10 @@ ui <- fluidPage(
       column(width = 8, #opening the plotting space
              plotOutput("plot1"),
              downloadButton("exportplot", "Save plot"),
-             tableOutput("table1"),
+             DT::dataTableOutput("table1"),
              downloadButton("exporttable", "Save table"),
              plotOutput("plot2"),
-             tableOutput("counts"),
+             #tableOutput("counts"),
            
            
     ) #closing fluid row 2
@@ -111,9 +112,9 @@ server <- function(input, output) {
     plotgene(data2(), input$gene_name)
   })
   
-  output$table1 <- renderTable({
-    tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
-  })
+  output$table1 <- DT::renderDataTable({
+    tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
+    options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
   
   output$export <- downloadHandler(
     filename = "plot.pdf",
