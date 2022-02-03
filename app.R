@@ -10,6 +10,7 @@ source("plot.R")
 source("filter.R")
 source("plotgene.R")
 
+
 ui <- fluidPage(
   titlePanel("RNA-Seq Visualisation"),
   theme = shinytheme("flatly"),
@@ -52,6 +53,8 @@ ui <- fluidPage(
                                                               ".csv")),
                                          uiOutput("selectfile2"),               
                                          actionButton("button2", "Go!"),
+                                         helpText("Download our metadata template"),
+                                         downloadButton("exportTemplate", "Download"),
                                          h4("  "),                    
                                          textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
                                 )
@@ -63,9 +66,8 @@ ui <- fluidPage(
              plotOutput("plot1"),
              downloadButton("exportplot", "Save plot"),
              DT::dataTableOutput("table1"),
-             downloadButton("exporttable", "Save table"),
-             plotOutput("plot2"),
-             #tableOutput("counts"),
+             downloadButton("exportTable", "Save table"),
+             plotOutput("plot2")
            
            
     ) #closing fluid row 2
@@ -97,12 +99,6 @@ server <- function(input, output) {
     read.csv(input$file2$datapath[input$file2$name==input$Select])
   })
   
-  output$counts <- renderTable({
-    req(input$file1)
-    df <- read.csv(input$file1$datapath[input$file1$name==input$Select])
-    return(head(df))
-  })
-  
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
   })
@@ -120,6 +116,18 @@ server <- function(input, output) {
     filename = "plot.pdf",
     content = function(file){
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
+    })
+  
+  output$exportTable <- downloadHandler(
+    filename = "nodeTable.pdf",
+    content = function(file){
+      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
+    })
+ 
+  output$exportTemplate <- downloadHandler(
+    filename = "metadata.csv",
+    content = function(file){
+      file.copy("metadata_template.csv", file)
     })
   
 }
