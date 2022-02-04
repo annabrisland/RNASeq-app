@@ -4,8 +4,8 @@ library(ggplot2)
 library(shinythemes)
 library(DT)
 
-#setwd("~/Desktop/RNASeq-app")
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
@@ -104,7 +104,6 @@ server <- function(input, output) {
   })
   
   output$plot2 <-  renderPlot({
-    
     plotgene(data2(), input$gene_name)
   })
   

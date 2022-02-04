@@ -8,6 +8,9 @@ tableNode <- function(id, n, reg, pval, size1, size2, term) {
   dataSelect <- id %>%
     select("GS_DESCR", "Name", "Genes", "gs_size", "fdr_qvalue", "pvalue", "NES")
   
+  dataSelect <- dataSelect[, c("GS_DESCR", "Name", "gs_size", "fdr_qvalue", "pvalue", "NES", "Genes")]
+  dataSelect$Genes <- gsub("\\|", ", ", dataSelect$Genes)
+  
   if(term == "") {
     dataTable <- dataSelect
   } else {
