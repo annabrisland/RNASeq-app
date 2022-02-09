@@ -4,8 +4,8 @@ library(ggplot2)
 library(shinythemes)
 library(DT)
 
-setwd("~/Desktop/RNASeq-app")
-#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("~/Desktop/RNASeq-app")
+setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
@@ -99,6 +99,8 @@ server <- function(input, output) {
     read.csv(input$file2$datapath[input$file2$name==input$Select])
   })
   
+  
+  
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
   })
@@ -106,6 +108,9 @@ server <- function(input, output) {
   output$plot2 <-  renderPlot({
     plotgene(data2(), input$gene_name)
   })
+  
+  
+  
   
   output$table1 <- DT::renderDataTable({
     tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
