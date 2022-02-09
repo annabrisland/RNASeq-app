@@ -2,7 +2,11 @@ library("tidyverse")
 library("dittoSeq")
 library("SummarizedExperiment")
 
-plotHeatmap <- function(id) {
+plotHeatmap <- function(id, meta) {
+
+  
+  strain <- meta$Strain
+  treatment <- meta$Treatment
   
   exp <- id %>%
     select(-DESCRIPTION) %>%
@@ -12,9 +16,6 @@ plotHeatmap <- function(id) {
   exp <- select(exp, -NAME) %>%
     head()
   
-  treatment <- c(rep("lowGlucose", 3), rep("highGlucose", 3), rep("lowMethionine", 3), rep("highMethionine", 3),
-                 rep("lowGlucose", 3), rep("highGlucose", 3), rep("lowMethionine", 3), rep("highMethionine", 3))
-  strain <- c(rep("H99", 12), rep("Cir1", 12))
   
   SEbulk <- SummarizedExperiment(assays = exp)
   

@@ -54,19 +54,31 @@ ui <- fluidPage(
                                                               ".csv")),
                                          uiOutput("selectfile2"),               
                                          actionButton("button2", "Go!"),
-                                         helpText("Upload your expression values (.txt)"),
-                                         fileInput("file3", "Choose .txt File",
-                                                   multiple = TRUE,
-                                                   accept = c("text/csv",
-                                                              "text/comma-separated-values,text/plain",
-                                                              ".csv")),
-                                         uiOutput("selectfile3"),               
-                                         actionButton("button3", "Build heatmap!"),
-                                         helpText("Download our metadata template"),
-                                         downloadButton("exportTemplate", "Download"),
                                          h4("  "),                    
                                          textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
-                                )
+                                ),
+                    tabPanel("Heatmap", #tab3
+                             
+                             
+                             helpText("Upload your expression values (.txt)"),
+                             fileInput("file3", "Choose .txt File",
+                                       multiple = TRUE,
+                                       accept = c("text/csv",
+                                                  "text/comma-separated-values,text/plain",
+                                                  ".csv")),
+                             uiOutput("selectfile3"),
+                             helpText("Download our metadata template"),
+                             downloadButton("exportTemplate", "Download"),
+                             helpText("Reupload your completed metadata template"),
+                             fileInput("file4", "Choose .csv File",
+                                       multiple = TRUE,
+                                       accept = c("text/csv",
+                                                  "text/comma-separated-values,text/plain",
+                                                  ".csv")),
+                             actionButton("button3", "Build heatmap!"),
+                            
+                    )
+                    
                     ), # closing tabs
     ), # closing the user input space
     
@@ -113,15 +125,19 @@ server <- function(input, output) {
   })
   
   data2 <- eventReactive(input$button2,{
-    read.csv(input$file2$datapath[input$file2$name==input$Select2], sep = "\t") 
+    read.csv(input$file2$datapath[input$file2$name==input$Select2]) 
   }) 
   
   data3 <- eventReactive(input$button3,{
     read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
   }) 
   
+  metadata <- reactive({if(is.null(input$file4)) {return()}
+  read.csv(input$file4$datapath, skip = 1)
+  })
+  
   output$heatmap <- renderPlot({
-    plotHeatmap(data3())
+    plotHeatmap(data3(), metadata())
   })
   
   output$plot1 <-  renderPlot({
