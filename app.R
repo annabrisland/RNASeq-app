@@ -9,6 +9,7 @@ setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAse
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
+source("heatmap.R")
 
 
 ui <- fluidPage(
@@ -24,7 +25,7 @@ ui <- fluidPage(
                                 tabPanel("Pathway Enrichment", #tab1
 
                     helpText("Upload your node tables (.csv) and gene counts (.csv)"),
-                    fileInput("file1", "Choose CSV File",
+                    fileInput("file1", "Choose .csv File",
                               multiple = TRUE,
                               accept = c("text/csv",
                                          "text/comma-separated-values,text/plain",
@@ -46,13 +47,21 @@ ui <- fluidPage(
                                          
                                          
                                          helpText("Upload your gene counts (.csv)"),
-                                         fileInput("file2", "Choose CSV File",
+                                         fileInput("file2", "Choose .csv File",
                                                    multiple = TRUE,
                                                    accept = c("text/csv",
                                                               "text/comma-separated-values,text/plain",
                                                               ".csv")),
                                          uiOutput("selectfile2"),               
                                          actionButton("button2", "Go!"),
+                                         helpText("Upload your expression values (.txt)"),
+                                         fileInput("file3", "Choose .txt File",
+                                                   multiple = TRUE,
+                                                   accept = c("text/csv",
+                                                              "text/comma-separated-values,text/plain",
+                                                              ".csv")),
+                                         uiOutput("selectfile3"),               
+                                         actionButton("button3", "Build heatmap!"),
                                          helpText("Download our metadata template"),
                                          downloadButton("exportTemplate", "Download"),
                                          h4("  "),                    
@@ -67,7 +76,8 @@ ui <- fluidPage(
              downloadButton("exportplot", "Save plot"),
              DT::dataTableOutput("table1"),
              downloadButton("exportTable", "Save table"),
-             plotOutput("plot2")
+             plotOutput("heatmap"),
+             plotOutput("plot2") 
            
            
     ) #closing fluid row 2
@@ -85,10 +95,17 @@ server <- function(input, output) {
   })
   
   output$selectfile2 <- renderUI({
-    if(is.null(input$file1)) {return()}
+    if(is.null(input$file2)) {return()}
     list(hr(), 
          helpText("Select the file you want to analyse"),
-         selectInput("Select", "Select File", choices=input$file2$name))
+         selectInput("Select2", "Select File", choices=input$file2$name))
+  })
+  
+  output$selectfile3 <- renderUI({
+    if(is.null(input$file3)) {return()}
+    list(hr(), 
+         helpText("Select the file you want to analyse"),
+         selectInput("Select3", "Select File", choices=input$file3$name))
   })
   
   data <- eventReactive(input$button,{
@@ -96,7 +113,15 @@ server <- function(input, output) {
   })
   
   data2 <- eventReactive(input$button2,{
-    read.csv(input$file2$datapath[input$file2$name==input$Select])
+    read.csv(input$file2$datapath[input$file2$name==input$Select2], sep = "\t") 
+  }) 
+  
+  data3 <- eventReactive(input$button3,{
+    read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
+  }) 
+  
+  output$heatmap <- renderPlot({
+    plotHeatmap(data3())
   })
   
   
