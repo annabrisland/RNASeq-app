@@ -4,8 +4,8 @@ library(ggplot2)
 library(shinythemes)
 library(DT)
 
-#setwd("~/Desktop/RNASeq-app")
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
@@ -13,88 +13,72 @@ source("heatmap.R")
 
 
 ui <- fluidPage(
-  titlePanel("RNA-Seq Visualisation"),
   theme = shinytheme("flatly"),
-  fluidRow(
-    
-    
-    fluidRow(column(width = 2,offset = 1, #opening the user input space
-                    
-                    
-                    tabsetPanel(type= "pills", #opening tabs
-                                tabPanel("Pathway Enrichment", #tab1
-
-                    helpText("Upload your node tables (.csv) and gene counts (.csv)"),
-                    fileInput("file1", "Choose .csv File",
-                              multiple = TRUE,
-                              accept = c("text/csv",
-                                         "text/comma-separated-values,text/plain",
-                                         ".csv")),
-                    uiOutput("selectfile"),               
-                    actionButton("button", "Go!"),
-                    h4("  "),             
-                                         
-                                   
-                                         numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
-                                         selectInput("regulation", "Filter by regulated pathways:", 
-                                                     c("all", "upregulated", "downregulated"), selected = "None"),
-                                         numericInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
-                                         sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
-                                         textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),
-                                         
-                                ),
-                                tabPanel("DEG", #tab2
-                                         
-                                         
-                                         helpText("Upload your gene counts (.csv)"),
-                                         fileInput("file2", "Choose .csv File",
-                                                   multiple = TRUE,
-                                                   accept = c("text/csv",
-                                                              "text/comma-separated-values,text/plain",
-                                                              ".csv")),
-                                         uiOutput("selectfile2"),               
-                                         actionButton("button2", "Go!"),
-                                         h4("  "),                    
-                                         textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),
-                                ),
-                    tabPanel("Heatmap", #tab3
-                             
-                             
-                             helpText("Upload your expression values (.txt)"),
-                             fileInput("file3", "Choose .txt File",
-                                       multiple = TRUE,
-                                       accept = c("text/csv",
-                                                  "text/comma-separated-values,text/plain",
-                                                  ".csv")),
-                             uiOutput("selectfile3"),
-                             helpText("Download our metadata template"),
-                             downloadButton("exportTemplate", "Download"),
-                             helpText("Reupload your completed metadata template"),
-                             fileInput("file4", "Choose .csv File",
-                                       multiple = TRUE,
-                                       accept = c("text/csv",
-                                                  "text/comma-separated-values,text/plain",
-                                                  ".csv")),
-                             actionButton("button3", "Build heatmap!"),
-                            
-                    )
-                    
-                    ), # closing tabs
-    ), # closing the user input space
-    
-    
-      column(width = 8, #opening the plotting space
-             plotOutput("plot1"),
-             downloadButton("exportplot", "Save plot"),
-             DT::dataTableOutput("table1"),
-             downloadButton("exportTable", "Save table"),
-             plotOutput("heatmap"),
-             plotOutput("plot2") 
-           
-           
-    ) #closing fluid row 2
-    ) #closing fluid row 1
-  ) #closing fluid page
+  navbarPage(title = "RNA-Seq Visualisation",
+             tabPanel("Pathway Enrichment",
+                      sidebarLayout(
+                      sidebarPanel(
+                        helpText("Upload your node tables (.csv) and gene counts (.csv)"),
+                        fileInput("file1", "Choose .csv File",
+                                multiple = TRUE,
+                                accept = c("text/csv",
+                                           "text/comma-separated-values,text/plain",
+                                           ".csv")),
+                        uiOutput("selectfile"),               
+                        actionButton("button", "Go!"),
+                        numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
+                        selectInput("regulation", "Filter by regulated pathways:", 
+                                  c("all", "upregulated", "downregulated"), selected = "None"),
+                        numericInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
+                        sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
+                        textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),),
+                        mainPanel(
+                          plotOutput("plot1"),
+                          downloadButton("exportplot", "Save plot"),
+                          DT::dataTableOutput("table1"),
+                          downloadButton("exportTable", "Save table"),
+                        ))),
+             
+             tabPanel("DEG", 
+                      sidebarLayout(
+                        sidebarPanel(
+                        helpText("Upload your gene counts (.csv)"),
+                      fileInput("file2", "Choose .csv File",
+                                multiple = TRUE,
+                                accept = c("text/csv",
+                                           "text/comma-separated-values,text/plain",
+                                           ".csv")),
+                      uiOutput("selectfile2"),               
+                      actionButton("button2", "Go!"),
+                      h4("  "),                    
+                      textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),),
+                      mainPanel(
+                        plotOutput("plot2")
+                      ))),
+             
+             tabPanel("Heatmap",
+                      sidebarLayout(
+                        sidebarPanel(
+                        helpText("Upload your expression values (.txt)"),
+                      fileInput("file3", "Choose .txt File",
+                                multiple = TRUE,
+                                accept = c("text/csv",
+                                           "text/comma-separated-values,text/plain",
+                                           ".csv")),
+                      uiOutput("selectfile3"),
+                      helpText("Download our metadata template"),
+                      downloadButton("exportTemplate", "Download"),
+                      helpText("Reupload your completed metadata template"),
+                      fileInput("file4", "Choose .csv File",
+                                multiple = TRUE,
+                                accept = c("text/csv",
+                                           "text/comma-separated-values,text/plain",
+                                           ".csv")),
+                      actionButton("button3", "Build heatmap!"),),
+             mainPanel(
+               plotOutput("heatmap"))
+             ))),
+  
 )
 
 server <- function(input, output) {
