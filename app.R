@@ -15,10 +15,14 @@ source("heatmap.R")
 ui <- fluidPage(
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
+             
+             #tabPanel("About",
+                     # helpText("hi")),
+             
              tabPanel("Pathway Enrichment",
                       sidebarLayout(
                       sidebarPanel(
-                        helpText("Upload your node tables (.csv)"),
+                        helpText("Upload your node tables (.csv)."),
                         fileInput("file1", "Choose .csv File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
@@ -35,26 +39,34 @@ ui <- fluidPage(
                         textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),),
                         mainPanel(
                           plotOutput("plot1"),
-                          downloadButton("exportplot", "Save plot"),
+                          uiOutput("plotButton"),
                           h4("  "),
                           DT::dataTableOutput("table1"),
-                          downloadButton("exportTable", "Save table"),
+                          uiOutput("tableButton"),
                           h4("  ")
                         ))),
              
              tabPanel("DEG", 
                       sidebarLayout(
                         sidebarPanel(
-                        helpText("Upload your gene counts (.csv)"),
+                        helpText("Upload your gene counts (.csv)."),
                       fileInput("file2", "Choose .csv File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
-                      uiOutput("selectfile2"),               
+                      uiOutput("selectfile2"),
+                      helpText("Upload your completed metadata template."),
+                      fileInput("file4", "Choose .csv File",
+                                multiple = TRUE,
+                                accept = c("text/csv",
+                                           "text/comma-separated-values,text/plain",
+                                           ".csv")),
+                      downloadLink("exportTemplateDEG", "Download our metadata template here."),
+                      h4("  "),
                       actionButton("button2", "Go!"),
                       h4("  "),                    
-                      textInput("gene_name", "List of genes:", placeholder = "e.g. CNAG_02780"),),
+                      textInput("gene_name", "Choose a gene:", placeholder = "e.g. CNAG_02780"),),
                       mainPanel(
                         plotOutput("plot2")
                       ))),
@@ -62,21 +74,21 @@ ui <- fluidPage(
              tabPanel("Heatmap",
                       sidebarLayout(
                         sidebarPanel(
-                        helpText("Upload your expression values (.txt)"),
+                        helpText("Upload your expression values (.txt)."),
                       fileInput("file3", "Choose .txt File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
                       uiOutput("selectfile3"),
-                      helpText("Download our metadata template"),
-                      downloadButton("exportTemplate", "Download"),
-                      helpText("Reupload your completed metadata template"),
+                      helpText("Upload your completed metadata template."),
                       fileInput("file4", "Choose .csv File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
+                      downloadLink("exportTemplate", "Download our metadata template here."),
+                      h4("  "),
                       actionButton("button3", "Build heatmap!"),),
              mainPanel(
                plotOutput("heatmap"))
@@ -132,18 +144,29 @@ server <- function(input, output) {
   })
   
   output$plot2 <-  renderPlot({
+    req(input$file2)
     plotgene(data2(), input$gene_name)
   })
   
   output$table1 <- DT::renderDataTable({
     tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
+ 
+   output$plotButton <- renderUI({
+    req(input$file1)
+    downloadButton("exportPlot", "Save plot")
+  })
   
   output$export <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
     })
+  
+  output$tableButton <- renderUI({
+    req(input$file1)
+    downloadButton("exportTable", "Save table")
+  })
   
   output$exportTable <- downloadHandler(
     filename = "nodeTable.pdf",
@@ -156,6 +179,12 @@ server <- function(input, output) {
     content = function(file){
       file.copy("metadata_template.csv", file)
     })
+  
+  output$exportTemplateDEG <- downloadHandler(
+      filename = "metadata.csv",
+      content = function(file){
+        file.copy("metadata_template.csv", file)
+      })
   
 }
 
