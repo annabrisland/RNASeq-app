@@ -16,8 +16,14 @@ ui <- fluidPage(
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
              
-             #tabPanel("About",
-                     # helpText("hi")),
+             tabPanel("About",
+                      titlePanel("Hello!"),
+                      mainPanel(
+                        "This application allows you to visualise your RNA-Seq data",
+                         h4("  "),       
+                      downloadLink("sample", "Download our sample data to try it out!")
+                      )
+                      ),
              
              tabPanel("Pathway Enrichment",
                       sidebarLayout(
@@ -185,6 +191,12 @@ server <- function(input, output) {
       content = function(file){
         file.copy("metadata_template.csv", file)
       })
+  
+  output$sample <- downloadHandler(
+    filename = "sample_nodeTable.csv",
+    content = function(file){
+      file.copy("0.06gWT_vs_0.06gcir1(fdr0.2)node_table.csv", file)
+    })
   
 }
 
