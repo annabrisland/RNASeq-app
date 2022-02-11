@@ -24,7 +24,12 @@ if(geneid == "") {
   
 }
 
-subdata$cond = c("24h_glucose","24h_glucose","24h_glucose","24h_glucose malate","24h_glucose malate","24h_glucose malate","24h_glucose malate stir","24h_glucose malate stir","24h_glucose malate stir","72h_glucose","72h_glucose","72h_glucose","72h_glucose malate","72h_glucose malate","72h_glucose malate","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir")
+subdata$cond = c("24h_glucose","24h_glucose","24h_glucose","24h_glucose malate","24h_glucose malate",
+                 "24h_glucose malate","24h_glucose malate stir","24h_glucose malate stir","24h_glucose malate stir",
+                 "72h_glucose","72h_glucose","72h_glucose","72h_glucose malate","72h_glucose malate","72h_glucose malate",
+                 "72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir",
+                 "72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir",
+                 "72h_glucose malate stir")
     
     
     

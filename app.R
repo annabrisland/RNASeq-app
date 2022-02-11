@@ -18,7 +18,7 @@ ui <- fluidPage(
              tabPanel("Pathway Enrichment",
                       sidebarLayout(
                       sidebarPanel(
-                        helpText("Upload your node tables (.csv) and gene counts (.csv)"),
+                        helpText("Upload your node tables (.csv)"),
                         fileInput("file1", "Choose .csv File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
@@ -26,6 +26,7 @@ ui <- fluidPage(
                                            ".csv")),
                         uiOutput("selectfile"),               
                         actionButton("button", "Go!"),
+                        h4("  "),
                         numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
                         selectInput("regulation", "Filter by regulated pathways:", 
                                   c("all", "upregulated", "downregulated"), selected = "None"),
@@ -35,8 +36,10 @@ ui <- fluidPage(
                         mainPanel(
                           plotOutput("plot1"),
                           downloadButton("exportplot", "Save plot"),
+                          h4("  "),
                           DT::dataTableOutput("table1"),
                           downloadButton("exportTable", "Save table"),
+                          h4("  ")
                         ))),
              
              tabPanel("DEG", 
@@ -124,8 +127,6 @@ server <- function(input, output) {
     plotHeatmap(data3(), metadata())
   })
   
-  
-  
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
   })
@@ -133,9 +134,6 @@ server <- function(input, output) {
   output$plot2 <-  renderPlot({
     plotgene(data2(), input$gene_name)
   })
-  
-  
-  
   
   output$table1 <- DT::renderDataTable({
     tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},

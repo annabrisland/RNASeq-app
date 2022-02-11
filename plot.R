@@ -38,7 +38,7 @@ plotNode <- function(id, n, reg, pval, size1, size2, term) {
       geom_point(aes(size = gs_size)) +
       theme_bw() +
       theme(text = element_text(size=13), axis.text.y = element_text(angle = 0, size = 15)) +
-      labs(y="GO terms",x="Escore", size="gene set size", colour = "P value",
+      labs(y="GO terms",x="E score", size="gene set size", colour = "p value",
            title = paste("Top", n, reg, "Pathways", sep = " ")) +
       scale_color_gradient(low = "blue", high = "red") +
       scale_y_discrete(labels = function(y) str_wrap(y, width =50)) +
