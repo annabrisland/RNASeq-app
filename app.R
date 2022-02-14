@@ -4,11 +4,13 @@ library(ggplot2)
 library(shinythemes)
 library(DT)
 
-setwd("~/Desktop/RNASeq-app")
+#setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+
 source("plot.R")
 source("filter.R")
-source("plotgene.R")
+#source("plotgene.R")
 source("heatmap.R")
 
 
@@ -140,64 +142,64 @@ server <- function(input, output) {
   metadata <- reactive({if(is.null(input$file4)) {return()}
   read.csv(input$file4$datapath, skip = 1)
   })
-  
+
   output$heatmap <- renderPlot({
     plotHeatmap(data3(), metadata())
   })
-  
+
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
   })
-  
-  output$plot2 <-  renderPlot({
-    req(input$file2)
-    plotgene(data2(), input$gene_name)
-  })
-  
+  # 
+  # output$plot2 <-  renderPlot({
+  #   req(input$file2)
+  #   plotgene(data2(), input$gene_name)
+  # })
+
   output$table1 <- DT::renderDataTable({
     tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
- 
+
    output$plotButton <- renderUI({
     req(input$file1)
     downloadButton("exportPlot", "Save plot")
   })
-  
+
   output$export <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
     })
-  
+
   output$tableButton <- renderUI({
     req(input$file1)
     downloadButton("exportTable", "Save table")
   })
-  
+
   output$exportTable <- downloadHandler(
     filename = "nodeTable.pdf",
     content = function(file){
       ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
     })
- 
+
   output$exportTemplate <- downloadHandler(
     filename = "metadata.csv",
     content = function(file){
       file.copy("metadata_template.csv", file)
     })
-  
+
   output$exportTemplateDEG <- downloadHandler(
       filename = "metadata.csv",
       content = function(file){
         file.copy("metadata_template.csv", file)
       })
-  
+
   output$sample <- downloadHandler(
     filename = "sample_nodeTable.csv",
     content = function(file){
       file.copy("0.06gWT_vs_0.06gcir1(fdr0.2)node_table.csv", file)
     })
-  
+
 }
 
 shinyApp(ui = ui, server = server)
