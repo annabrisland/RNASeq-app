@@ -6,7 +6,7 @@ library(DT)
 
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 source("plot.R")
 source("filter.R")
@@ -103,7 +103,8 @@ ui <- fluidPage(
                       textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012, CNAG_00106, CNAG_00156"),
                       actionButton("button3", "Build heatmap!"),),
              mainPanel(
-               plotOutput("heatmap"))
+              plotOutput("heatmap"),
+              uiOutput("heatmapButton"))
              ))),
   
 )
@@ -150,6 +151,8 @@ server <- function(input, output) {
   output$heatmap <- renderPlot({
     plotHeatmap(data3(), metadata(), input$gene_list)
   })
+  
+  
 
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
@@ -178,6 +181,20 @@ server <- function(input, output) {
   output$tableButton <- renderUI({
     req(input$file1)
     downloadButton("exportTable", "Save table")
+  })
+  
+  
+  output$exportHeatmap <- downloadHandler(
+    filename = "plot.pdf",
+    content = function(file){
+      
+      ggsave(file, plotHeatmap(data3(), metadata(), input$gene_list))
+    })
+  
+  
+  output$heatmapButton <- renderUI({
+    req(input$file3)
+    downloadButton("exportHeatmap", "Save plot")
   })
 
   output$exportTable <- downloadHandler(
