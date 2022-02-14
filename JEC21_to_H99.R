@@ -6,13 +6,13 @@ convertGeneID <- function(id) {
     select(Gene.ID, Input.Ortholog.s.)
   colnames(geneconv)[1] = "NAME"
   
-  data <- read.csv("AllSamples _expression_values.txt", sep = "\t") %>%
+  data <- id %>%
   inner_join(geneconv, by = "NAME") %>%
-  select(-NAME, -DESCRIPTION) %>%
-    distinct(Input.Ortholog.s., .keep_all = TRUE)
-  rownames(data) <- data$Input.Ortholog.s.
+  select(-NAME) %>%
+  distinct(Input.Ortholog.s., .keep_all = TRUE)
+  data <- data[,c(ncol(data),1:(ncol(data)-1))]
+  colnames(data)[1] = "NAME"
   
-  data <- select(data, -Input.Ortholog.s.)
   
   return(data)
   
