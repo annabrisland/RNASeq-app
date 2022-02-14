@@ -193,9 +193,12 @@ server <- function(input, output) {
   output$exportHeatmap <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
-      
-      ggsave(file, plotHeatmap(data3(), metadata(), input$gene_list))
-    })
+      if (input$H991) {
+        ggsave(file,plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list))
+      } else {
+        ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list))
+      }
+  })
   
   
   output$heatmapButton <- renderUI({
