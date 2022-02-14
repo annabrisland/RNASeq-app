@@ -4,9 +4,8 @@ library(ggplot2)
 library(shinythemes)
 library(DT)
 
-#setwd("~/Desktop/RNASeq-app")
-#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 source("plot.R")
 source("filter.R")
@@ -148,7 +147,11 @@ server <- function(input, output) {
   })
 
   output$heatmap <- renderPlot({
-    plotHeatmap(data3(), metadata(), input$gene_list)
+      if (input$H991) {
+      plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
+    } else {
+      plotHeatmap(data3(), metadata(), input$gene_list)
+    }
   })
 
   output$plot1 <-  renderPlot({
@@ -169,7 +172,7 @@ server <- function(input, output) {
     downloadButton("exportPlot", "Save plot")
   })
 
-  output$export <- downloadHandler(
+  output$exportPlot <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
