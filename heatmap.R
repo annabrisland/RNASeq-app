@@ -1,9 +1,5 @@
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
 
-#BiocManager::install("dittoSeq")
-
-
+options(repos = BiocManager::repositories())
 library("tidyverse")
 library("dittoSeq")
 library("SummarizedExperiment")
