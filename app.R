@@ -10,6 +10,7 @@ source("plot.R")
 source("filter.R")
 source("plotgene.R")
 source("heatmap.R")
+source("JEC21_to_H99.R")
 
 
 ui <- fluidPage(
@@ -34,7 +35,8 @@ ui <- fluidPage(
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
-                        uiOutput("selectfile"),               
+                        uiOutput("selectfile"), 
+                        checkboxInput("H99", "Cryptococcus neofomans (H99)"),              
                         actionButton("button", "Go!"),
                         h4("  "),
                         numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
@@ -63,7 +65,7 @@ ui <- fluidPage(
                                            ".csv")),
                       uiOutput("selectfile2"),
                       helpText("Upload your completed metadata template."),
-                      fileInput("file4", "Choose .csv File",
+                      fileInput("file5", "Choose .csv File",
                                 multiple = TRUE,
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
@@ -87,6 +89,7 @@ ui <- fluidPage(
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
                       uiOutput("selectfile3"),
+                      checkboxInput("H991", "Cryptococcus neofomans (H99)"),              
                       helpText("Upload your completed metadata template."),
                       fileInput("file4", "Choose .csv File",
                                 multiple = TRUE,
@@ -95,6 +98,7 @@ ui <- fluidPage(
                                            ".csv")),
                       downloadLink("exportTemplate", "Download our metadata template here."),
                       h4("  "),
+                      textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012, CNAG_00106, CNAG_00156"),
                       actionButton("button3", "Build heatmap!"),),
              mainPanel(
                plotOutput("heatmap"))
@@ -142,7 +146,7 @@ server <- function(input, output) {
   })
   
   output$heatmap <- renderPlot({
-    plotHeatmap(data3(), metadata())
+    plotHeatmap(data3(), metadata(), input$gene_list)
   })
   
   output$plot1 <-  renderPlot({

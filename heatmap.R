@@ -1,20 +1,39 @@
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+#BiocManager::install("dittoSeq")
+
+
 library("tidyverse")
 library("dittoSeq")
 library("SummarizedExperiment")
 
-plotHeatmap <- function(id, meta) {
+plotHeatmap <- function(id, meta, list) {
 
+  genes <- as.data.frame(strsplit(list, split = ", "))
+  colnames(genes)[1] <- "NAME"
+    
   
   strain <- meta$Strain
   treatment <- meta$Treatment
   
-  exp <- id %>%
+  if(list == "") {
+    exp <- id %>%
     select(-DESCRIPTION) %>%
     distinct(NAME, .keep_all = TRUE)
   rownames(exp) <- exp[,1]   
   
   exp <- select(exp, -NAME) %>%
-    head()
+    head(n = 15)
+  } else {
+    exp <- id %>%
+      filter(NAME %in% genes$NAME) %>%
+      select(-DESCRIPTION) %>%
+      distinct(NAME, .keep_all = TRUE)
+    rownames(exp) <- exp[,1]   
+    
+    exp <- select(exp, -NAME)
+  }
   
   
   SEbulk <- SummarizedExperiment(assays = exp)
