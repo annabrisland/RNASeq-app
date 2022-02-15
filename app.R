@@ -5,7 +5,7 @@ library(shinythemes)
 library(DT)
 
 
-setwd("~/Desktop/RNASeq-app")
+#setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
