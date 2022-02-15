@@ -166,9 +166,16 @@ server <- function(input, output) {
   #   plotgene(data2(), input$gene_name)
   # })
 
-  output$table1 <- DT::renderDataTable({
+  observe(if (input$H99) {
+    output$table1 <-  DT::renderDataTable({
     tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
+  } else {
+    output$table1 <-  DT::renderDataTable({
+      tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
+      options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
+  })
+  
 
    output$plotButton <- renderUI({
     req(input$file1)

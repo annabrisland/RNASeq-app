@@ -34,7 +34,6 @@ convertNode <-  function(id) {
   nodeReform = data.frame()
   
   for (term in pathway) {
-    print(term)
     
     spldata <- data %>%
       filter(GS_DESCR == term) %>%
