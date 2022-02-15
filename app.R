@@ -5,9 +5,8 @@ library(shinythemes)
 library(DT)
 
 
-#setwd("~/Desktop/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 source("plot.R")
@@ -158,19 +157,17 @@ server <- function(input, output) {
     }
   })
   
-  
-
   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
   })
-  # 
+   
   # output$plot2 <-  renderPlot({
   #   req(input$file2)
   #   plotgene(data2(), input$gene_name)
   # })
 
   output$table1 <- DT::renderDataTable({
-    tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
+    tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
 
    output$plotButton <- renderUI({
