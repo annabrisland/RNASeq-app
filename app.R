@@ -7,11 +7,12 @@ library(DT)
 
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 source("plot.R")
 source("filter.R")
-#source("plotgene.R")
+source("plotgene.R")
 source("heatmap.R")
 source("JEC21_to_H99.R")
 
@@ -112,6 +113,9 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+  
+### File import code  START
+  
   output$selectfile <- renderUI({
     if(is.null(input$file1)) {return()}
     list(hr(), 
@@ -133,6 +137,14 @@ server <- function(input, output) {
          selectInput("Select3", "Select File", choices=input$file3$name))
   })
   
+  
+   metadata <- reactive({if(is.null(input$file4)) {return()}
+  read.csv(input$file4$datapath, skip = 1)
+  })
+  
+   ### File import code  END
+   
+   ### Load in data from user import START
   data <- eventReactive(input$button,{
     read.csv(input$file1$datapath[input$file1$name==input$Select])
   })
@@ -144,29 +156,17 @@ server <- function(input, output) {
   data3 <- eventReactive(input$button3,{
     read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
   }) 
+  ### Load in data from user import END
   
-  metadata <- reactive({if(is.null(input$file4)) {return()}
-  read.csv(input$file4$datapath, skip = 1)
-  })
-
-  output$heatmap <- renderPlot({
-      if (input$H991) {
-      plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
-    } else {
-      plotHeatmap(data3(), metadata(), input$gene_list)
-    }
-  })
   
-  output$plot1 <-  renderPlot({
+  
+  
+  ### TAB for Pathway Enrichment START
+   output$plot1 <-  renderPlot({
     plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
-  })
-   
-  # output$plot2 <-  renderPlot({
-  #   req(input$file2)
-  #   plotgene(data2(), input$gene_name)
-  # })
-
-  observe(if (input$H99) {
+  }) 
+  
+    observe(if (input$H99) {
     output$table1 <-  DT::renderDataTable({
     tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
@@ -176,7 +176,6 @@ server <- function(input, output) {
       options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
   })
   
-
    output$plotButton <- renderUI({
     req(input$file1)
     downloadButton("exportPlot", "Save plot")
@@ -187,13 +186,43 @@ server <- function(input, output) {
     content = function(file){
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
     })
-
+  
   output$tableButton <- renderUI({
     req(input$file1)
     downloadButton("exportTable", "Save table")
   })
   
+  output$exportTable <- downloadHandler(
+    filename = "nodeTable.pdf",
+    content = function(file){
+      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
+    })
+  ### TAB for Pathway Enrichment END 
   
+  
+  
+  ### TAB for DEG plotting START
+ 
+  output$plot2 <-  renderPlot({
+    req(input$file2)
+    plotgene(data2(), input$gene_name)
+  })
+ 
+  
+  ### TAB for DEG plotting END
+  
+
+  
+  ### TAB for heatmap plotting START
+  
+  output$heatmap <- renderPlot({
+      if (input$H991) {
+      plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
+    } else {
+      plotHeatmap(data3(), metadata(), input$gene_list)
+    }
+  })
+
   output$exportHeatmap <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
@@ -203,18 +232,23 @@ server <- function(input, output) {
         ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list))
       }
   })
-  
+
   
   output$heatmapButton <- renderUI({
     req(input$file3)
     downloadButton("exportHeatmap", "Save plot")
   })
+    
+  
+  ### TAB for heatmap plotting END
 
-  output$exportTable <- downloadHandler(
-    filename = "nodeTable.pdf",
-    content = function(file){
-      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
-    })
+
+
+  
+
+
+  ### MISC
+
 
   output$exportTemplate <- downloadHandler(
     filename = "metadata.csv",
