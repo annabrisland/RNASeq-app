@@ -6,8 +6,8 @@ library(DT)
 
 
 #setwd("~/Desktop/RNASeq-app")
-#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 source("plot.R")
@@ -163,10 +163,35 @@ server <- function(input, output) {
   
   ### TAB for Pathway Enrichment START
    output$plot1 <-  renderPlot({
-    plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
+      pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
+      pathway_plot
   }) 
   
-    observe(if (input$H99) {
+
+  
+   output$plotButton <- renderUI({
+
+    downloadButton("exportPlot", "Save plot")
+  })
+
+  output$exportPlot <- downloadHandler(
+    filename = "plot.pdf",
+    content = function(file){
+      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway) )
+    })
+  
+  output$tableButton <- renderUI({
+
+    downloadButton("exportTable", "Save table")
+  })
+  
+  output$exportTable <- downloadHandler(
+    filename = "nodeTable.pdf",
+    content = function(file){
+      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway),height=4,dpi = 120)
+    })    
+  
+  observe(if (input$H99) {
     output$table1 <-  DT::renderDataTable({
     tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
@@ -175,28 +200,6 @@ server <- function(input, output) {
       tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
       options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
   })
-  
-   output$plotButton <- renderUI({
-    req(input$file1)
-    downloadButton("exportPlot", "Save plot")
-  })
-
-  output$exportPlot <- downloadHandler(
-    filename = "plot.pdf",
-    content = function(file){
-      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
-    })
-  
-  output$tableButton <- renderUI({
-    req(input$file1)
-    downloadButton("exportTable", "Save table")
-  })
-  
-  output$exportTable <- downloadHandler(
-    filename = "nodeTable.pdf",
-    content = function(file){
-      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize, input$pathway),height=4,dpi = 120)
-    })
   ### TAB for Pathway Enrichment END 
   
   

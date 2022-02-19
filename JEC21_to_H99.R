@@ -29,11 +29,11 @@ convertNode <-  function(id) {
   data <- id %>%
     select("GS_DESCR", "Genes")
   
-  pathway <- as.character(data$GS_DESCR)
+  pathway_desc <- as.character(data$GS_DESCR)
   
   nodeReform = data.frame()
   
-  for (term in pathway) {
+  for (term in pathway_desc) {
     
     spldata <- data %>%
       filter(GS_DESCR == term) %>%

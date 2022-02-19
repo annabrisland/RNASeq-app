@@ -10,14 +10,14 @@ tableNode <- function(id, n, reg, pval, size1, size2, term) {
   
   dataSelect <- dataSelect[, c("GS_DESCR", "Name", "gs_size", "fdr_qvalue", "pvalue", "NES", "Genes")]
   dataSelect$Genes <- gsub("\\|", ", ", dataSelect$Genes)
-  
+
   if(term == "") {
     dataTable <- dataSelect
   } else {
     key_values = grep(term,dataSelect$GS_DESCR)
     dataTable = dataSelect[key_values,]
   }
-  
+
   if(reg == "upregulated") {
     dataTable <- dataTable %>%
       filter(NES>=0)
