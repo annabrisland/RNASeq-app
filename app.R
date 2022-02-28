@@ -5,8 +5,8 @@ library(shinythemes)
 library(DT)
 
 
-#setwd("~/Desktop/RNASeq-app")
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
@@ -103,7 +103,9 @@ ui <- fluidPage(
                       downloadLink("exportTemplate", "Download our metadata template here."),
                       h4("  "),
                       textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012, CNAG_00106, CNAG_00156"),
-                      actionButton("button3", "Build heatmap!"),),
+                      actionButton("button3", "data"),
+                      actionButton("button4", "heatmap"),
+                      ),
              mainPanel(
               plotOutput("heatmap"),
               uiOutput("heatmapButton"))
@@ -132,7 +134,7 @@ server <- function(input, output) {
   
   output$selectfile3 <- renderUI({
     if(is.null(input$file3)) {return()}
-    list(hr(), 
+    list(hr(),
          helpText("Select the file you want to analyse"),
          selectInput("Select3", "Select File", choices=input$file3$name))
   })
@@ -153,9 +155,11 @@ server <- function(input, output) {
     read.csv(input$file2$datapath[input$file2$name==input$Select2]) 
   }) 
   
-  data3 <- eventReactive(input$button3,{
+  data3 <- eventReactive(input$button3, {
     read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
-  }) 
+  })
+  
+  
   ### Load in data from user import END
   
   
@@ -217,14 +221,21 @@ server <- function(input, output) {
 
   
   ### TAB for heatmap plotting START
-  
-  output$heatmap <- renderPlot({
-      if (input$H991) {
+
+  v <- reactiveValues(plot = NULL)
+
+  observeEvent(input$button4, {
+   v$plot <- if (input$H991) {
       plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
     } else {
       plotHeatmap(data3(), metadata(), input$gene_list)
     }
   })
+  output$heatmap <- renderPlot({
+    if (is.null(v$plot)) return()
+    v$plot
+  })
+  
 
   output$exportHeatmap <- downloadHandler(
     filename = "plot.pdf",
