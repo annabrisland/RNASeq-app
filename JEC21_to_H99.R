@@ -45,7 +45,7 @@ convertNode <-  function(id) {
       separate_rows(Input.Ortholog.s., sep = ",") %>%
       distinct(Input.Ortholog.s., .keep_all = TRUE)
     
-    joindata <- rbind(convertdata, comb = apply(convertdata, 2, paste0, collapse = ", ")) %>%
+    joindata <- rbind(convertdata, comb = apply(convertdata, 2, paste0, collapse = " ")) %>%
       tail(n = 1) %>%
       mutate(GS_DESCR = term)
     colnames(joindata)[2] <- "Gene list"
