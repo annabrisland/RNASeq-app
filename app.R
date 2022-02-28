@@ -103,8 +103,7 @@ ui <- fluidPage(
                       downloadLink("exportTemplate", "Download our metadata template here."),
                       h4("  "),
                       textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012, CNAG_00106, CNAG_00156"),
-                      actionButton("button3", "data"),
-                      actionButton("button4", "heatmap"),
+                      actionButton("button4", "Build heatmap!"),
                       ),
              mainPanel(
               plotOutput("heatmap"),
@@ -132,14 +131,6 @@ server <- function(input, output) {
          selectInput("Select2", "Select File", choices=input$file2$name))
   })
   
-  output$selectfile3 <- renderUI({
-    if(is.null(input$file3)) {return()}
-    list(hr(),
-         helpText("Select the file you want to analyse"),
-         selectInput("Select3", "Select File", choices=input$file3$name))
-  })
-  
-  
    metadata <- reactive({if(is.null(input$file4)) {return()}
   read.csv(input$file4$datapath, skip = 1)
   })
@@ -155,9 +146,8 @@ server <- function(input, output) {
     read.csv(input$file2$datapath[input$file2$name==input$Select2]) 
   }) 
   
-  data3 <- eventReactive(input$button3, {
-    read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
-  })
+  data3 <- reactive({read.csv(input$file3$datapath, sep = "\t")}) 
+  
   
   
   ### Load in data from user import END
