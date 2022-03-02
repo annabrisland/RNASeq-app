@@ -6,7 +6,7 @@ library("SummarizedExperiment")
 
 plotHeatmap <- function(id, meta, list) {
 
-  genes <- as.data.frame(strsplit(list, split = " "))
+  genes <- as.data.frame(strsplit(list, split = "\\s+"))
   colnames(genes)[1] <- "NAME"
     
   
