@@ -1,12 +1,17 @@
+options(repos = BiocManager::repositories())
 library("tidyverse")
 library("gridExtra")
 library("ggplot2")
 library("reshape2")
 
 
-plotgene <- function(normalized_counts, geneid) {
+plotgene <- function(normalized_counts,metadata, geneid) {
 
-normalized_counts =  read.csv("AllGeneCounts.csv")
+#testing parameters  
+# normalized_counts =  read.csv("AllGeneCounts.csv")
+# geneid = "CNAG_02780"
+# metadata = read.csv("metadata_test.csv",skip = 1)
+#testing parameters
 
 normalized_counts$gene_name = rownames(normalized_counts)
 normalized_counts$gene_name = as.factor(normalized_counts$gene_name)
@@ -24,12 +29,8 @@ if(geneid == "") {
   
 }
 
-subdata$cond = c("24h_glucose","24h_glucose","24h_glucose","24h_glucose malate","24h_glucose malate",
-                 "24h_glucose malate","24h_glucose malate stir","24h_glucose malate stir","24h_glucose malate stir",
-                 "72h_glucose","72h_glucose","72h_glucose","72h_glucose malate","72h_glucose malate","72h_glucose malate",
-                 "72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir",
-                 "72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir","72h_glucose malate stir",
-                 "72h_glucose malate stir")
+labels <- paste(metadata[[2]],metadata[[3]])
+subdata$cond = labels
     
     
     
@@ -42,7 +43,7 @@ return(
     theme_bw()+
     labs(y="Normalized read count")+
     theme(legend.position = "none",
-          axis.text.x = element_text(angle = -45),
+          axis.text.x = element_text(angle = -75),
           axis.text = element_text(face="bold",size=12),
           axis.title.x = element_blank(),
           axis.title.y = element_text(face = "bold",size = 15))
