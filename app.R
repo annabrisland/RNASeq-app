@@ -1,8 +1,8 @@
-library(shiny)
-library(tidyverse)
-library(ggplot2)
-library(shinythemes)
-library(DT)
+library("shiny")
+library("tidyverse")
+library("ggplot2")
+library("shinythemes")
+library("DT")
 
 
 #setwd("~/Desktop/RNASeq-app")
@@ -141,6 +141,10 @@ server <- function(input, output) {
    metadata <- reactive({if(is.null(input$file4)) {return()}
   read.csv(input$file4$datapath, skip = 1)
   })
+   
+   metadatagene <- reactive({if(is.null(input$file5)) {return()}
+     read.csv(input$file5$datapath, skip = 1)
+   })
   
    ### File import code  END
    
@@ -208,7 +212,7 @@ server <- function(input, output) {
  
   output$plot2 <-  renderPlot({
     req(input$file2)
-    plotgene(data2(), input$gene_name)
+    plotgene(data2(),metadatagene(), input$gene_name)
   })
  
   
