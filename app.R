@@ -5,8 +5,8 @@ library("shinythemes")
 library("DT")
 
 
-#setwd("~/Desktop/RNASeq-app")
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
@@ -40,7 +40,7 @@ ui <- fluidPage(
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
                         uiOutput("selectfile"), 
-                        checkboxInput("H99", "Cryptococcus neofomans (H99)"),              
+                        checkboxInput("H99", "My data is Cryptococcus neofomans (H99)"),              
                         actionButton("button", "Go!"),
                         h4("  "),
                         numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
@@ -54,7 +54,7 @@ ui <- fluidPage(
                           uiOutput("plotButton"),
                           h4("  "),
                           DT::dataTableOutput("table1"),
-                          uiOutput("tableButton"),
+                          # uiOutput("tableButton"),
                           h4("  ")
                         ))),
              
@@ -92,8 +92,7 @@ ui <- fluidPage(
                                 accept = c("text/csv",
                                            "text/comma-separated-values,text/plain",
                                            ".csv")),
-                      uiOutput("selectfile3"),
-                      checkboxInput("H991", "Cryptococcus neofomans (H99)"),              
+                      checkboxInput("H991", "My data is Cryptococcus neofomans (H99)"),              
                       helpText("Upload your completed metadata template."),
                       fileInput("file4", "Choose .csv File",
                                 multiple = TRUE,
@@ -102,8 +101,9 @@ ui <- fluidPage(
                                            ".csv")),
                       downloadLink("exportTemplate", "Download our metadata template here."),
                       h4("  "),
-                      textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012, CNAG_00106, CNAG_00156"),
-                      actionButton("button3", "Build heatmap!"),),
+                      textInput("gene_list", "Enter your gene list", placeholder = "e.g. CNAG_03012 CNAG_00106 CNAG_00156"),
+                      actionButton("button4", "Go!"),
+                      ),
              mainPanel(
               plotOutput("heatmap"),
               uiOutput("heatmapButton"))
@@ -130,14 +130,6 @@ server <- function(input, output) {
          selectInput("Select2", "Select File", choices=input$file2$name))
   })
   
-  output$selectfile3 <- renderUI({
-    if(is.null(input$file3)) {return()}
-    list(hr(), 
-         helpText("Select the file you want to analyse"),
-         selectInput("Select3", "Select File", choices=input$file3$name))
-  })
-  
-  
    metadata <- reactive({if(is.null(input$file4)) {return()}
   read.csv(input$file4$datapath, skip = 1)
   })
@@ -157,9 +149,10 @@ server <- function(input, output) {
     read.csv(input$file2$datapath[input$file2$name==input$Select2]) 
   }) 
   
-  data3 <- eventReactive(input$button3,{
-    read.csv(input$file3$datapath[input$file3$name==input$Select3], sep = "\t") 
-  }) 
+  data3 <- reactive({read.csv(input$file3$datapath, sep = "\t")}) 
+  
+  
+  
   ### Load in data from user import END
   
   
@@ -167,6 +160,7 @@ server <- function(input, output) {
   
   ### TAB for Pathway Enrichment START
    output$plot1 <-  renderPlot({
+     validate(need(input$file1, 'Please upload your data.'))
       pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
       pathway_plot
   }) 
@@ -184,25 +178,31 @@ server <- function(input, output) {
       ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway) )
     })
   
-  output$tableButton <- renderUI({
-
-    downloadButton("exportTable", "Save table")
-  })
-  
-  output$exportTable <- downloadHandler(
-    filename = "nodeTable.pdf",
-    content = function(file){
-      ggsave(file, tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway),height=4,dpi = 120)
-    })    
+  # output$tableButton <- renderUI({
+  # 
+  #   downloadButton("exportTable", "Save table")
+  # })
+  # 
+  # output$exportTable <- downloadHandler(
+  #   filename = "nodeTable.csv",
+  #   content = function(file){
+  #     write.csv(tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway),height=4,dpi = 120)
+  #   })    
   
   observe(if (input$H99) {
     output$table1 <-  DT::renderDataTable({
-    tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
-    options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
+      validate(need(input$file1, ""))
+    tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)}, extensions = c('Buttons', 'Scroller'),
+    options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px", dom = 'Bfrtip',
+                   deferRender = TRUE,
+                   buttons = c('csv', 'excel', 'pdf')))
   } else {
     output$table1 <-  DT::renderDataTable({
-      tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)},
-      options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px"))
+      validate(need(input$file1, ""))
+      tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)}, extensions = c('Buttons', 'Scroller'), 
+      options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px", dom = 'Bfrtip',
+                     deferRender = TRUE,
+                     buttons = c('csv', 'excel', 'pdf')))
   })
   ### TAB for Pathway Enrichment END 
   
@@ -221,14 +221,21 @@ server <- function(input, output) {
 
   
   ### TAB for heatmap plotting START
-  
-  output$heatmap <- renderPlot({
-      if (input$H991) {
+
+  v <- reactiveValues(plot = NULL)
+
+  observeEvent(input$button4, {
+   v$plot <- if (input$H991) {
       plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
     } else {
       plotHeatmap(data3(), metadata(), input$gene_list)
     }
   })
+  output$heatmap <- renderPlot({
+ if (is.null(v$plot)) return()
+    v$plot
+  })
+  
 
   output$exportHeatmap <- downloadHandler(
     filename = "plot.pdf",
