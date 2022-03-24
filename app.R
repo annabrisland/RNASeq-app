@@ -6,7 +6,7 @@ library("DT")
 
 
 #setwd("~/Desktop/RNASeq-app")
-setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
@@ -24,9 +24,11 @@ ui <- fluidPage(
              tabPanel("About",
                       titlePanel("Hello!"),
                       mainPanel(
-                        "This application allows you to visualise your RNA-Seq data",
+                        "This application allows you to visualise your RNA-Seq data at the level of pathways and genes",
                         h4("  "),       
-                        downloadLink("sample", "Download our sample data to try it out!")
+                        downloadLink("sample", "Download our sample data to try it out!"),
+                        h4("  "),      
+                        "This webapp was created by Anna Brisland and Christopher Lee (christopherjlee@msl.ubc.ca)"
                       )
              ),
              
@@ -68,7 +70,6 @@ ui <- fluidPage(
                                     accept = c("text/csv",
                                                "text/comma-separated-values,text/plain",
                                                ".csv")),
-                          checkboxInput("H991", "My data is Cryptococcus neofomans (H99)"),              
                           helpText("Upload your completed metadata template."),
                           fileInput("file4", "Choose .csv File",
                                     multiple = TRUE,
@@ -93,7 +94,6 @@ ui <- fluidPage(
                                     accept = c("text/csv",
                                                "text/comma-separated-values,text/plain",
                                                ".csv")),
-                          checkboxInput("H991", "My data is Cryptococcus neofomans (H99)"),              
                           helpText("Upload your completed metadata template."),
                           fileInput("file5", "Choose .csv File",
                                     multiple = TRUE,
@@ -127,11 +127,11 @@ server <- function(input, output) {
   
   
    metadata <- reactive({if(is.null(input$file4)) {return()}
-  read.csv(input$file4$datapath, skip = 1)
+  read.csv(input$file4$datapath)
   })
    
    metadatagene <- reactive({if(is.null(input$file5)) {return()}
-     read.csv(input$file5$datapath, skip = 1)
+     read.csv(input$file5$datapath)
    })
   
    ### File import code  END
@@ -154,7 +154,7 @@ server <- function(input, output) {
   
   ### TAB for Pathway Enrichment START
    output$plot1 <-  renderPlot({
-     validate(need(input$file1, 'Please upload your data.'))
+     validate(need(input$file1, 'Please upload your notetable.'))
       pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
       pathway_plot
   }) 
@@ -189,71 +189,29 @@ server <- function(input, output) {
   })
   ### TAB for Pathway Enrichment END 
   
-  
-  
-  ### TAB for DEG plotting START
- 
-  x <- reactiveValues(plot = NULL)
-  
-  observeEvent(input$button2, {
-    x$plot <- if (input$H991) {
-      plotgene(convertGeneID(data2()),metadatagene(), input$gene_name)
-    } else {
-      plotgene(data2(),metadatagene(), input$gene_name)
-    }
-  })
-  output$plot2 <- renderPlot({
-    if (is.null(x$plot)) return()
-    x$plot
-  })
 
   
-  
-  output$exportbarplot <- downloadHandler(
-    filename = "plot.pdf",
-    content = function(file){
-      if (input$H991) {
-        plotgene(convertGeneID(data2()),metadatagene(), input$gene_name)
-      } else {
-        plotgene(data2(),metadatagene(), input$gene_name)
-      }
-    })
-  
-  
-  output$barplotbutton <- renderUI({
-    req(input$file2)
-    downloadButton("exportbarplot", "Save plot")
-  })
-  
-  ### TAB for DEG plotting END
-  
-
-  
-  ### TAB for heatmap plotting START
+  ### TAB for heat map plotting START
 
   v <- reactiveValues(plot = NULL)
 
   observeEvent(input$button4, {
-   v$plot <- if (input$H991) {
-      plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list)
-    } else {
+   v$plot <- 
       plotHeatmap(data3(), metadata(), input$gene_list)
-    }
+    
   })
   output$heatmap <- renderPlot({
- if (is.null(v$plot)) return()
-    v$plot
-  })
+   if (is.null(v$plot)) return()
+      v$plot
+    })
   
 
   output$exportHeatmap <- downloadHandler(
-    filename = "plot.pdf",
+    filename = "plot.png",
     content = function(file){
-      if (input$H991) {
-        ggsave(file,plotHeatmap(convertGeneID(data3()), metadata(), input$gene_list))
-      } else {
+      
         ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list))
-      }
+      
   })
 
   
@@ -263,9 +221,41 @@ server <- function(input, output) {
   })
     
   
-  ### TAB for heatmap plotting END
+  ### TAB for heat map plotting END
+  
 
+ ### TAB for DEG plotting START
+ 
+  x <- reactiveValues(plot = NULL)
+  
+  observeEvent(input$button2, {
+    x$plot <- 
+      plotgene(data2(),metadatagene(), input$gene_name)
+  })
+  
+  output$plot2 <- renderPlot({
+    validate(need(input$file2, 'Please upload your normalized gene counts.'))
+    if (is.null(x$plot)) return()
+    x$plot
+  })
 
+  
+  
+  output$exportbarplot <- downloadHandler(
+    filename = "plot.png",
+    content = function(file){
+      
+      plotgene(data2(),metadatagene(), input$gene_name)
+      
+    })
+  
+  
+  output$barplotbutton <- renderUI({
+    req(input$file2)
+    downloadButton("exportbarplot", "Save plot")
+  })
+  
+  ### TAB for DEG plotting END
 
   
 

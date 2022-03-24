@@ -1,10 +1,11 @@
-options(repos = BiocManager::repositories())
+library("BiocManager")
 library("tidyverse")
 library("gridExtra")
 library("ggplot2")
 library("reshape2")
 library("RColorBrewer")
 
+options(repos = BiocManager::repositories())
 plotgene <- function(normalized_counts,metadata, geneid) {
 
 # # testing parameters
@@ -30,7 +31,7 @@ if(length(geneid$NAME) == 1) {
     ggplot(subdata,aes(x=cond, y= as.numeric(value),fill = cond))+
       geom_point()+
       geom_boxplot()+
-      ggtitle(geneid)+
+      ggtitle("Gene expression")+
       theme_bw()+
       labs(y="Normalized read count")+
       theme(legend.position = "none",
@@ -47,7 +48,7 @@ if(length(geneid$NAME) == 1) {
   return(     
     ggplot(subdata,aes(x=gene_name, y= as.numeric(value),fill = cond))+
       geom_boxplot()+
-      ggtitle(geneid)+
+      ggtitle("Gene expression")+
       theme_bw()+
       labs(y="Normalized read count")+
       theme(axis.text.x = element_text(angle = -75),
