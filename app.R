@@ -86,7 +86,9 @@ ui <- fluidPage(
                         ),
                         mainPanel(
                           plotOutput("heatmap"),
-                          uiOutput("heatmapButton"))
+                          uiOutput("heatmapButton"),
+                          numericInput("heatmaptext_size", "Change the gene label text size", min = 1, max = 50, value = 10))
+                        
                       )),
              tabPanel("DEG", 
                       sidebarLayout(
@@ -204,7 +206,7 @@ server <- function(input, output) {
 
   observeEvent(input$button4, {
    v$plot <- 
-      plotHeatmap(data3(), metadata(), input$gene_list)
+      plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size)
     
   })
   output$heatmap <- renderPlot({
@@ -217,7 +219,7 @@ server <- function(input, output) {
     filename = "plot.pdf",
     content = function(file){
       
-        ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list))
+        ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size))
       
   })
   

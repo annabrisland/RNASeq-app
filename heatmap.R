@@ -3,7 +3,9 @@ options(repos = BiocManager::repositories())
 library("tidyverse")
 library("dittoSeq")
 library("SummarizedExperiment")
-plotHeatmap <- function(id, meta, list) {
+# library("grid")
+# library("ComplexHeatmap")
+plotHeatmap <- function(id, meta, list, row_text_size) {
 
   #For troubleshooting
   # meta = read.csv("metadata_test.csv", skip = 1)
@@ -39,8 +41,8 @@ plotHeatmap <- function(id, meta, list) {
   SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = paste(meta[[2]],meta[[3]])))
   
   dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = FALSE,
-                     show_colnames = FALSE, rowv = FALSE, fontsize = 6.75, scale = "row", scaled.to.max = FALSE)
-  
+                     show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
+  #, row_names_gp = gpar(fontsize = row_text_size), complex = TRUE     ----this is for trying to change font size for the gene names. Can delete when the feature is done.
   return(dd)
   
 }
