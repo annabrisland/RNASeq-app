@@ -110,8 +110,12 @@ ui <- fluidPage(
                           textInput("gene_name", "Choose a gene:", placeholder = "e.g. CNAG_02780"),),
                         mainPanel(
                           plotOutput("plot2"),
-                          uiOutput("barplotbutton")
-                        )))),
+                          uiOutput("barplotbutton"),
+                          textInput("yaxis_name", "y-axis label", placeholder = "Normalized gene expression", value ="Normalized gene expression" ),
+                          numericInput("text_size", "Change the text size", min = 0, max = 50, value = 15),
+                          helpText("Press GO! after changed the options above")),
+                        
+                        ))),
   
   
   
@@ -236,7 +240,7 @@ server <- function(input, output) {
   
   observeEvent(input$button2, {
     x$plot <- 
-      plotgene(data2(),metadatagene(), input$gene_name)
+      plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size)
   })
   
   output$plot2 <- renderPlot({
@@ -251,7 +255,7 @@ server <- function(input, output) {
     filename = "plot.pdf",
     content = function(file){
       
-      ggsave(file,plotgene(data2(),metadatagene(), input$gene_name))
+      ggsave(file,plotgene(data2(),metadatagene(), input$gene_name,input$yaxis_name, input$text_size))
       
     })
   

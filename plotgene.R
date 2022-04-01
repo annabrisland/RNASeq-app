@@ -6,7 +6,7 @@ library("reshape2")
 library("RColorBrewer")
 
 options(repos = BiocManager::repositories())
-plotgene <- function(normalized_counts,metadata, geneid) {
+plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size) {
 
 # # testing parameters
 # normalized_counts =  read.table("_expression_valuesALL.txt",skip = 1)
@@ -35,12 +35,12 @@ if(length(geneid$NAME) == 1) {
       geom_boxplot()+
       ggtitle(geneid)+
       theme_bw()+
-      labs(y="Normalized read count")+
+      labs(y=yaxis_label)+
       theme(legend.position = "none",
             axis.text.x = element_text(angle = -75),
-            axis.text = element_text(face="bold",size=12),
+            axis.text = element_text(face="bold",size = text_size),
             axis.title.x = element_blank(),
-            axis.title.y = element_text(face = "bold",size = 15))+
+            axis.title.y = element_text(face = "bold",size = text_size))+
       scale_fill_brewer(palette="Paired")
     
   )
@@ -52,11 +52,11 @@ if(length(geneid$NAME) == 1) {
       geom_boxplot()+
       ggtitle(geneid)+
       theme_bw()+
-      labs(y="Normalized read count")+
+      labs(y=yaxis_label)+
       theme(axis.text.x = element_text(angle = -75),
-            axis.text = element_text(face="bold",size=12),
+            axis.text = element_text(face="bold",size = text_size),
             axis.title.x = element_blank(),
-            axis.title.y = element_text(face = "bold",size = 15))+
+            axis.title.y = element_text(face = "bold",size = text_size))+
       scale_fill_brewer(palette="Paired")
     
   )
