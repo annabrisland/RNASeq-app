@@ -18,6 +18,9 @@ source("JEC21_to_H99.R")
 
 
 ui <- fluidPage(
+  
+  tags$head(includeHTML(("analytics.html"))),
+  
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
              
@@ -207,12 +210,15 @@ server <- function(input, output) {
   
 
   output$exportHeatmap <- downloadHandler(
-    filename = "plot.png",
+    filename = "plot.pdf",
     content = function(file){
       
         ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list))
       
   })
+  
+  
+  
 
   
   output$heatmapButton <- renderUI({
@@ -242,10 +248,10 @@ server <- function(input, output) {
   
   
   output$exportbarplot <- downloadHandler(
-    filename = "plot.png",
+    filename = "plot.pdf",
     content = function(file){
       
-      plotgene(data2(),metadatagene(), input$gene_name)
+      ggsave(file,plotgene(data2(),metadatagene(), input$gene_name))
       
     })
   

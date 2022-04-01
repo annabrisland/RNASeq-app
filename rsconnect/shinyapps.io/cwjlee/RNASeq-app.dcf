@@ -5,10 +5,10 @@ account: cwjlee
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5924456
-bundleId: 5721001
+bundleId: 5737407
 url: https://cwjlee.shinyapps.io/RNASeq-app/
-when: 1648106929.45804
-lastSyncTime: 1648106929.45804
+when: 1648505467.42742
+lastSyncTime: 1648505467.42742
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: _expression_valuesALL.txt|0.06gWT_vs_0.06gcir1(fdr0.2)node_table.csv|0mMWT_vs_0mMcir1(fdr0.2)node_table.csv|10mMWT_vs_10mMcir1(fdr0.2)node_table.csv|2gWT_vs_2gcir1(fdr0.2)node_table.csv|AllGeneCounts.csv|AllSamples _expression_values.txt|metadata_test.csv|README.md
