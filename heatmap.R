@@ -39,7 +39,7 @@ plotHeatmap <- function(id, meta, list) {
   SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = paste(meta[[2]],meta[[3]])))
   
   dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = FALSE,
-                     show_colnames = FALSE, rowv = FALSE, fontsize = 6.75)
+                     show_colnames = FALSE, rowv = FALSE, fontsize = 6.75, scale = "row", scaled.to.max = FALSE)
   
   return(dd)
   
