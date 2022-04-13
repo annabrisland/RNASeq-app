@@ -5,7 +5,7 @@ library("dittoSeq")
 library("SummarizedExperiment")
 # library("grid")
 # library("ComplexHeatmap")
-plotHeatmap <- function(id, meta, list, row_text_size) {
+plotHeatmap <- function(id, meta, list, row_text_size, col_cluster) {
 
   #For troubleshooting
   # meta = read.csv("metadata_test.csv", skip = 1)
@@ -40,10 +40,23 @@ plotHeatmap <- function(id, meta, list, row_text_size) {
   
   SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = paste(meta[[2]],meta[[3]])))
   
+if (col_cluster == "TRUE"){
+      dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = TRUE,
+                     show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
+  #, row_names_gp = gpar(fontsize = row_text_size), complex = TRUE     ----this is for trying to change font size for the gene names. Can delete when the feature is done.
+  return(dd)
+  
+  
+} else if(col_cluster == "FALSE"){
   dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = FALSE,
                      show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
   #, row_names_gp = gpar(fontsize = row_text_size), complex = TRUE     ----this is for trying to change font size for the gene names. Can delete when the feature is done.
   return(dd)
+  
+  
+}
+  
+
   
 }
 

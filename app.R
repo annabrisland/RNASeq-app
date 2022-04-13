@@ -57,9 +57,10 @@ ui <- fluidPage(
                         mainPanel(
                           plotOutput("plot1"),
                           uiOutput("plotButton"),
+                          numericInput("pathwaytext_size", "Change the  y-axis text size", min = 1, max = 50, value = 10),
                           h4("  "),
                           DT::dataTableOutput("table1"),
-                          # uiOutput("tableButton"),
+                        # uiOutput("tableButton"),
                           h4("  ")
                         ))),
              
@@ -87,7 +88,10 @@ ui <- fluidPage(
                         mainPanel(
                           plotOutput("heatmap"),
                           uiOutput("heatmapButton"),
-                          numericInput("heatmaptext_size", "Change the gene label text size", min = 1, max = 50, value = 10))
+                          numericInput("heatmaptext_size", "Change the gene label text size", min = 1, max = 50, value = 10),
+                          selectInput("col_cluster", label = ("Specify whether you would like to cluster your heatmap based on colum similarity"), 
+                                      choices = list("cluster" = TRUE, "no cluster" = FALSE), 
+                                      selected = TRUE))
                         
                       )),
              tabPanel("DEG", 
@@ -115,7 +119,7 @@ ui <- fluidPage(
                           uiOutput("barplotbutton"),
                           textInput("yaxis_name", "y-axis label", placeholder = "Normalized gene expression", value ="Normalized gene expression" ),
                           numericInput("text_size", "Change the text size", min = 0, max = 50, value = 15),
-                          helpText("Press GO! after changed the options above")),
+                          helpText("Press GO! after changing the options above")),
                         
                         ))),
   
@@ -164,7 +168,7 @@ server <- function(input, output) {
   ### TAB for Pathway Enrichment START
    output$plot1 <-  renderPlot({
      validate(need(input$file1, 'Please upload your notetable.'))
-      pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)
+      pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size)
       pathway_plot
   }) 
   
@@ -178,7 +182,7 @@ server <- function(input, output) {
   output$exportPlot <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
-      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway) )
+      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size) )
     })
   
   observe(if (input$H99) {
@@ -206,7 +210,7 @@ server <- function(input, output) {
 
   observeEvent(input$button4, {
    v$plot <- 
-      plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size)
+      plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size, input$col_cluster)
     
   })
   output$heatmap <- renderPlot({
@@ -219,7 +223,7 @@ server <- function(input, output) {
     filename = "plot.pdf",
     content = function(file){
       
-        ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size))
+        ggsave(file,plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size, input$col_cluster))
       
   })
   

@@ -4,7 +4,7 @@ library("ggplot2")
 
 
 
-plotNode <- function(id, n, reg, pval, size1, size2, term) {
+plotNode <- function(id, n, reg, pval, size1, size2, term, pathwyatext_size) {
   
   if(term == "") {
     dataPlot <- id
@@ -37,7 +37,7 @@ plotNode <- function(id, n, reg, pval, size1, size2, term) {
     ggplot(dataPlot,aes(x=NES,y=GS_DESCR,color = pvalue)) +
       geom_point(aes(size = gs_size)) +
       theme_bw() +
-      theme(text = element_text(size=13), axis.text.y = element_text(angle = 0, size = 15)) +
+      theme(text = element_text(size=13), axis.text.y = element_text(angle = 0, size = pathwyatext_size)) +
       labs(y="GO terms",x="Normalized Enrichment score", size="gene set size", colour = "p value",
            title = paste("Top", n, reg, "Pathways", sep = " ")) +
       scale_color_gradient(low = "blue", high = "red") +
