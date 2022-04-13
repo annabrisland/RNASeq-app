@@ -30,8 +30,9 @@ ui <- fluidPage(
                         "This application allows you to visualise your RNA-Seq data at the level of pathways and genes",
                         h4("  "),       
                         downloadLink("sample", "Download our sample data to try it out!"),
-                        h4("  "),      
-                        "This webapp was created by Anna Brisland and Christopher Lee (christopherjlee@msl.ubc.ca)"
+                        h4("  "), 
+                        "This webapp was created by Anna Brisland (annabrisland@gmail.com) and Christopher Lee (christopherjlee@msl.ubc.ca)",
+                        img(src='image.png', align = "left", height = "90%", width = "90%")
                       )
              ),
              
