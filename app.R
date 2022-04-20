@@ -41,7 +41,7 @@ ui <- fluidPage(
                         h4("  "), 
                         "This webapp was created by Anna Brisland (annabrisland@gmail.com) and Christopher Lee (christopherjlee@msl.ubc.ca)"),
                         column(7,
-                        img(src='image.png', align = "right", height = "100%", width = "100%"))
+                        img(src='image.png', align = "right", height = "98%", width = "98%"))
                       )
              ),
              
