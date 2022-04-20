@@ -28,9 +28,16 @@ ui <- fluidPage(
                       titlePanel("Hello!"),
                       fluidRow(
                         column(5,
-                        "This application allows you to visualise your RNA-Seq data at the level of pathways and genes",
+                        "This application allows you to visualise your RNA-Seq data at the level of pathways and genes.
+                        Our 'Pathway Enrichment' tab takes a node table input to provide a dotplot of enriched pathways.
+                        In the 'Heatmap' tab, you can build heatmaps to illustrate gene expression data. 
+                        Finally, the 'DEG' tab allows you to observe differences in individual gene expression via normalised count data.",
                         h4("  "),       
-                        downloadLink("sample", "Download our sample data to try it out!"),
+                        downloadLink("sample_node", "Click here to download our sample node table to look at pathway enrichment data"),
+                        h4("  "),
+                        downloadLink("sample_heatmap", "Click here to download our sample expression data and accompanying metadata to build a heatmap"),
+                        h4("  "),
+                        downloadLink("sample_DEG", "Click here to download our sample expression data and accompanying metadata to look at individual gene expression"),
                         h4("  "), 
                         "This webapp was created by Anna Brisland (annabrisland@gmail.com) and Christopher Lee (christopherjlee@msl.ubc.ca)"),
                         column(7,
@@ -52,8 +59,8 @@ ui <- fluidPage(
                           actionButton("button", "Go!"),
                           h4("  "),
                           numericInput("topn", "Filter number of pathways:", min = 0, max = 1000, value = 15),
-                          selectInput("regulation", "Filter by regulated pathways:", 
-                                      c("all", "upregulated", "downregulated"), selected = "None"),
+                          selectInput("regulation", "Filter by enriched pathways:", 
+                                      c("all", "positively", "negatively"), selected = "None"),
                           numericInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
                           sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
                           textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),),
@@ -92,8 +99,8 @@ ui <- fluidPage(
                           plotOutput("heatmap"),
                           uiOutput("heatmapButton"),
                           numericInput("heatmaptext_size", "Change the gene label text size", min = 1, max = 50, value = 10),
-                          selectInput("col_cluster", label = ("Specify whether you would like to cluster your heatmap based on colum similarity"), 
-                                      choices = list("cluster" = TRUE, "no cluster" = FALSE), 
+                          selectInput("col_cluster", label = ("How would you like to cluster your heatmap?"), 
+                                      choices = list("According to column similarity" = TRUE, "According to sample" = FALSE), 
                                       selected = TRUE))
                         
                       )),
@@ -114,15 +121,15 @@ ui <- fluidPage(
                                                ".csv")),
                           downloadLink("exportTemplateDEG", "Download our metadata template here."),
                           h4("  "),
-                          actionButton("button2", "Go!"),
-                          h4("  "),                    
-                          textInput("gene_name", "Choose a gene:", placeholder = "e.g. CNAG_02780"),),
+                          textInput("gene_name", "Choose a gene:", placeholder = "e.g. CNAG_02780"),
+                          actionButton("button2", "Go!"),                    
+                          ),
                         mainPanel(
                           plotOutput("plot2"),
                           uiOutput("barplotbutton"),
                           textInput("yaxis_name", "y-axis label", placeholder = "Normalized gene expression", value ="Normalized gene expression" ),
                           numericInput("text_size", "Change the text size", min = 0, max = 50, value = 15),
-                          helpText("Press GO! after changing the options above")),
+                          helpText("Press Go! after changing the options above")),
                         
                         ))),
   
@@ -178,7 +185,7 @@ server <- function(input, output) {
 
   
    output$plotButton <- renderUI({
-
+     validate(need(input$file1, ''))
     downloadButton("exportPlot", "Save plot")
   })
 
@@ -248,6 +255,7 @@ server <- function(input, output) {
   x <- reactiveValues(plot = NULL)
   
   observeEvent(input$button2, {
+    validate(need(input$gene_name, ''))
     x$plot <- 
       plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size)
   })
@@ -294,10 +302,22 @@ server <- function(input, output) {
         file.copy("metadata_template.csv", file)
       })
 
-  output$sample <- downloadHandler(
-    filename = "sample_nodeTable.csv",
+  output$sample_node <- downloadHandler(
+    filename = "Control_versus_TreatmentA_nodeTable_DEMO.csv",
     content = function(file){
-      file.copy("0.06gWT_vs_0.06gcir1(fdr0.2)node_table.csv", file)
+      file.copy("demo_data/Control_versus_TreatmentA_nodeTable_DEMO.csv", file)
+    })
+  
+  output$sample_heatmap <- downloadHandler(
+    filename = "Allexpression_values_DEMO.zip",
+    content = function(file){
+      file.copy("demo_data/Allexpression_values_DEMO.zip", file)
+    })
+  
+  output$sample_DEG <- downloadHandler(
+    filename = "Control_versus_TreatmentA_expression_values_DEMO.zip",
+    content = function(file){
+      file.copy("demo_data/Control_versus_TreatmentA_expression_values_DEMO.zip", file)
     })
 
 }
