@@ -1,0 +1,7 @@
+sample,treatment,strain
+1_1ReadsPerGene.out.tab,Control,wildtype
+1_2ReadsPerGene.out.tab,Control,wildtype
+1_3ReadsPerGene.out.tab,Control,wildtype
+5_1ReadsPerGene.out.tab,Treatment,wildtype
+5_2ReadsPerGene.out.tab,Treatment,wildtype
+5_3ReadsPerGene.out.tab,Treatment,wildtype
