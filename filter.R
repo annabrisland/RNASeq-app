@@ -18,10 +18,10 @@ tableNode <- function(id, n, reg, pval, size1, size2, term) {
     dataTable = dataSelect[key_values,]
   }
 
-  if(reg == "upregulated") {
+  if(reg == "positively") {
     dataTable <- dataTable %>%
       filter(NES>=0)
-  } else if(reg == "downregulated") {
+  } else if(reg == "negatively") {
     dataTable <- dataTable %>%
       filter(NES<=0)
   } else if(reg == "all") {

@@ -13,10 +13,10 @@ plotNode <- function(id, n, reg, pval, size1, size2, term, pathwyatext_size) {
     dataPlot = id[key_values,]
   }
   
-  if(reg == "upregulated") {
+  if(reg == "positively") {
     dataPlot <- dataPlot %>%
       filter(NES>=0)
-  } else if(reg == "downregulated") {
+  } else if(reg == "negatively") {
     dataPlot <- dataPlot %>%
       filter(NES<=0)
   } else if(reg == "all") {
@@ -39,7 +39,7 @@ plotNode <- function(id, n, reg, pval, size1, size2, term, pathwyatext_size) {
       theme_bw() +
       theme(text = element_text(size=13), axis.text.y = element_text(angle = 0, size = pathwyatext_size)) +
       labs(y="GO terms",x="Normalized Enrichment score", size="gene set size", colour = "p value",
-           title = paste("Top", n, reg, "Pathways", sep = " ")) +
+           title = paste("Top", n, reg, "enriched Pathways", sep = " ")) +
       scale_color_gradient(low = "blue", high = "red") +
       scale_y_discrete(labels = function(y) str_wrap(y, width =50)) +
       scale_color_gradient(low = "blue", high = "red")
