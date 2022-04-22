@@ -5,17 +5,9 @@ account: cwjlee
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5924456
-<<<<<<< HEAD
-bundleId: 5827677
+bundleId: 5828158
 url: https://cwjlee.shinyapps.io/RNASeq-app/
-when: 1650655385.8172
-lastSyncTime: 1650655385.8172
-=======
-bundleId: 5824225
-url: https://cwjlee.shinyapps.io/RNASeq-app/
-when: 1650584311.53679
-lastSyncTime: 1650584311.5368
->>>>>>> 63e305f9da47e4495f42eeb460021ccc78764a6e
+when: 1650664804.6443
+lastSyncTime: 1650664804.6443
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: AllGeneCounts.csv|README.md
