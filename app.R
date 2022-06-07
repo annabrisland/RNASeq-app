@@ -128,6 +128,8 @@ ui <- fluidPage(
                           plotOutput("plot2"),
                           uiOutput("barplotbutton"),
                           textInput("yaxis_name", "y-axis label", placeholder = "Normalized gene expression", value ="Normalized gene expression" ),
+                          textInput("specify_order", "Specify the order of your first condition", placeholder = "A, B, C", value ="" ),
+                          textInput("specify_order2", "Specify the order of your second condition", placeholder = "A, B, C", value ="" ),
                           numericInput("text_size", "Change the text size", min = 0, max = 50, value = 15),
                           helpText("Press Go! after changing the options above")),
                         
@@ -257,7 +259,7 @@ server <- function(input, output) {
   observeEvent(input$button2, {
     validate(need(input$gene_name, ''))
     x$plot <- 
-      plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size)
+      plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size, input$specify_order, input$specify_order2)
   })
   
   output$plot2 <- renderPlot({
@@ -272,7 +274,7 @@ server <- function(input, output) {
     filename = "plot.pdf",
     content = function(file){
       
-      ggsave(file,plotgene(data2(),metadatagene(), input$gene_name,input$yaxis_name, input$text_size))
+      ggsave(file,plotgene(data2(),metadatagene(), input$gene_name,input$yaxis_name, input$text_size,input$specify_order, input$specify_order2))
       
     })
   

@@ -5,8 +5,18 @@ library("ggplot2")
 library("reshape2")
 library("RColorBrewer")
 
+#testing function 
+# normalized_counts = read.table("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/Data/2022/RNAseq/peng_30-622029803/2v1/2v1 _expression_values.txt")
+# metadata = read.csv("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/Data/2022/RNAseq/peng_30-622029803/2v1/2v1 _metadata.csv")
+# geneid = "CNAG_02780"
+# specify_order = "No_LDOPA_WT"
+# specify_order2 = "LDOPA_WT"
+# yaxis_label = "nothing here"
+# text_size = 15  
+#   
+#   
 options(repos = BiocManager::repositories())
-plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size) {
+plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size, specify_order, specify_order2) {
 
 # # testing parameters
 # normalized_counts =  read.table("_expression_valuesALL.txt",skip = 1)
@@ -23,7 +33,19 @@ geneid <- as.data.frame(strsplit(geneid, split = "\\s+"))
 colnames(geneid)[1] <- "NAME"
 subdata = filter(normalized_counts_long, gene_name %in% geneid$NAME)
 subdata = subdata[order(subdata$gene_name),]
-subdata$cond <- paste(metadata[[2]],metadata[[3]])
+subdata$cond <- paste(metadata[[2]],metadata[[3]], sep = "_")
+
+
+if(specify_order !="" &specify_order2 !="" ){
+  
+  
+  subdata$cond <- factor(subdata$cond,levels = c(specify_order, specify_order2))
+  
+} else if(specify_order == "" | specify_order2 == ""){
+  
+}
+
+
 
 if(length(geneid$NAME) == 1) {
   
