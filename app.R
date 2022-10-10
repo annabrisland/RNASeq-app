@@ -8,7 +8,7 @@ library("DT")
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-
+setwd("C:/Users/jessi/OneDrive/Documents/GitHub/RNASeq-app")
 
 source("plot.R")
 source("filter.R")
