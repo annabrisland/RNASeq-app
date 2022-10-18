@@ -1,27 +1,31 @@
+
+#used to generate the plot in the DEG tab
+
 library("BiocManager")
 library("tidyverse")
 library("gridExtra")
 library("ggplot2")
 library("reshape2")
 library("RColorBrewer")
+library("validate")
 
-#testing function 
+# #testing function 
 # normalized_counts = read.table("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/Data/2022/RNAseq/peng_30-622029803/2v1/2v1 _expression_values.txt")
 # metadata = read.csv("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/Data/2022/RNAseq/peng_30-622029803/2v1/2v1 _metadata.csv")
 # geneid = "CNAG_02780"
 # specify_order = "No_LDOPA_WT"
 # specify_order2 = "LDOPA_WT"
 # yaxis_label = "nothing here"
-# text_size = 15  
-#   
+# text_size = 15
+# #   
 #   
 options(repos = BiocManager::repositories())
 plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size, specify_order, specify_order2) {
 
-# # testing parameters
-# normalized_counts =  read.table("_expression_valuesALL.txt",skip = 1)
+# testing parameters
+#normalized_counts =  read.table("_expression_valuesALL.txt",skip = 1)
 # geneid = "CNAG_04242"
-# metadata = read.csv("metadata_test.csv",skip = 1)
+# metadata = read.csv("coldata.csv",skip = 1)
 # # testing parameters
 
 normalized_counts = normalized_counts[,-2]
@@ -31,9 +35,21 @@ normalized_counts_long <- melt(normalized_counts, id.vars=c("gene_name"))
 
 geneid <- as.data.frame(strsplit(geneid, split = "\\s+"))
 colnames(geneid)[1] <- "NAME"
+
+
+
 subdata = filter(normalized_counts_long, gene_name %in% geneid$NAME)
 subdata = subdata[order(subdata$gene_name),]
-subdata$cond <- paste(metadata[[2]],metadata[[3]], sep = "_")
+
+if(is.na(metadata[[2]][1])){
+  
+  subdata$cond <- metadata[[3]]
+  
+} else {
+  
+  subdata$cond <- paste(metadata[[2]],metadata[[3]], sep = "_")
+  
+}
 
 
 if(specify_order !="" &specify_order2 !="" ){

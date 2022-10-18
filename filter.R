@@ -1,9 +1,12 @@
+
+#Used to make a table that correlates with the figure shown in the pathway visualization tab
+
 library("tidyverse")
 library("gridExtra")
 library("ggplot2")
 
 
-tableNode <- function(id, n, reg, pval, size1, size2, term) {
+tableNode <- function(id, n, reg, pval, size1, size2, term,qval) {
   
   dataSelect <- id %>%
     select("GS_DESCR", "Name", "Genes", "gs_size", "fdr_qvalue", "pvalue", "NES")
@@ -29,7 +32,8 @@ tableNode <- function(id, n, reg, pval, size1, size2, term) {
   }
   
   dataTable <- dataTable %>%
-    filter(pvalue <= pval)  %>%
+    filter(pvalue <= pval) %>%
+    filter(fdr_qvalue<= qval) %>%
     filter(gs_size >= size1) %>%
     filter(gs_size <= size2)
   

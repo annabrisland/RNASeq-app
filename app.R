@@ -4,6 +4,7 @@ library("ggplot2")
 library("shinythemes")
 library("DT")
 
+# remember to comment these "setwd()" lines out before publishing or else it will break upon deployment
 
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
@@ -62,6 +63,8 @@ ui <- fluidPage(
                           selectInput("regulation", "Filter by enriched pathways:", 
                                       c("all", "positively", "negatively"), selected = "None"),
                           numericInput("pvalue", "Filter by p value:", min = 0, max = 0.1, value = 0.05),
+                          numericInput("qvalue", "Filter by q value:", min = 0, max = 0.1, value = 0.001),
+                          
                           sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
                           textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),),
                         mainPanel(
@@ -180,7 +183,7 @@ server <- function(input, output) {
   ### TAB for Pathway Enrichment START
    output$plot1 <-  renderPlot({
      validate(need(input$file1, 'Please upload your notetable.'))
-      pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size)
+      pathway_plot <- plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size,input$qvalue)
       pathway_plot
   }) 
   
@@ -194,20 +197,20 @@ server <- function(input, output) {
   output$exportPlot <- downloadHandler(
     filename = "plot.pdf",
     content = function(file){
-      ggsave(file, plotNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size) )
+      ggsave(file, plotNode(data(), input$topn, input$regulation,  input$nodesize[1], input$nodesize[2], input$pathway, input$pathwaytext_size,input$qvalue) )
     })
   
   observe(if (input$H99) {
     output$table1 <-  DT::renderDataTable({
       validate(need(input$file1, ""))
-    tableNode(convertNode(data()), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)}, extensions = c('Buttons', 'Scroller'),
+    tableNode(convertNode(data()), input$topn, input$regulation, input$nodesize[1], input$nodesize[2], input$pathway,input$qvalue)}, extensions = c('Buttons', 'Scroller'),
     options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px", dom = 'Bfrtip',
                    deferRender = TRUE,
                    buttons = c('csv', 'excel', 'pdf')))
   } else {
     output$table1 <-  DT::renderDataTable({
       validate(need(input$file1, ""))
-      tableNode(data(), input$topn, input$regulation, input$pvalue, input$nodesize[1], input$nodesize[2], input$pathway)}, extensions = c('Buttons', 'Scroller'), 
+      tableNode(data(), input$topn, input$regulation, input$pvalue,input$nodesize[1], input$nodesize[2], input$pathway,input$qvalue)}, extensions = c('Buttons', 'Scroller'), 
       options = list(bPaginate = F, scrollX = TRUE, scrollY = "500px", dom = 'Bfrtip',
                      deferRender = TRUE,
                      buttons = c('csv', 'excel', 'pdf')))
@@ -256,16 +259,40 @@ server <- function(input, output) {
  
   x <- reactiveValues(plot = NULL)
   
+  
+
   observeEvent(input$button2, {
-    validate(need(input$gene_name, ''))
-    x$plot <- 
-      plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size, input$specify_order, input$specify_order2)
+    #for testing only
+    # valdat2 = read.table("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/Data/2022/RNAseq/peng_30-622029803/2v1/2v1 _expression_values.txt",header = T)
+    # valgene = "CNAG_02780 wCNAG_00028"
+  
+    ###########################################################################
+    valdat2 = data2()                                                         #
+    valgene = input$gene_name                                                 #
+    valgene_name <- as.data.frame(strsplit(valgene, split = "\\s+"))          #
+    valgene_name_matrix = as.matrix(valgene_name)                             # validating that the gene names
+    vadat2sub = valdat2 %>%                                                   # entered by the user are correct
+      filter(valdat2$NAME %in% valgene_name_matrix)                           #
+    inputlength = dim(valgene_name)                                           #
+    checklength = dim(vadat2sub)                                              #
+    ###########################################################################
+    if (inputlength[1] == checklength[1]) {
+       validate(need(input$gene_name, "Please enter genes"))
+       validate(need(data2(), "Please upload the expression file (.txt)"))
+       validate(need(metadatagene(), "Please upload the metadata file (.csv)"))
+      x$plot <- plotgene(data2(),metadatagene(), input$gene_name, input$yaxis_name, input$text_size, input$specify_order, input$specify_order2)
+
+    } else {
+      x$plot <- ""
+    }
   })
   
   output$plot2 <- renderPlot({
     validate(need(input$file2, 'Please upload your normalized gene counts.'))
-    if (is.null(x$plot)) return()
+    validate(need(metadatagene(), "Please upload the metadata file (.csv)"))
+    validate(need(x$plot!="", "Please double check the gene name spelling and press GO!"))
     x$plot
+
   })
 
   
@@ -276,7 +303,7 @@ server <- function(input, output) {
       
       ggsave(file,plotgene(data2(),metadatagene(), input$gene_name,input$yaxis_name, input$text_size,input$specify_order, input$specify_order2))
       
-    })
+  })
   
   
   output$barplotbutton <- renderUI({
