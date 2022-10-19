@@ -6,21 +6,22 @@ library("DT")
 
 # remember to comment these "setwd()" lines out before publishing or else it will break upon deployment
 
-#setwd("~/Desktop/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/jessi/OneDrive/Documents/GitHub/RNASeq-app")
 
+
+
+#Loading in reference scripts
 source("plot.R")
 source("filter.R")
 source("plotgene.R")
 source("heatmap.R")
 source("JEC21_to_H99.R")
-
+#source("volcano_plot.R")
 
 ui <- fluidPage(
   
-  tags$head(includeHTML(("analytics.html"))),
   
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
@@ -136,7 +137,27 @@ ui <- fluidPage(
                           numericInput("text_size", "Change the text size", min = 0, max = 50, value = 15),
                           helpText("Press Go! after changing the options above")),
                         
-                        ))),
+                        )),
+             
+             
+             tabPanel("Volcano Plot", 
+                      sidebarLayout(
+                        sidebarPanel(
+                          helpText("Upload your DESeq2 Results (.csv)."),
+                          fileInput("volcano_file", "Choose .csv File",
+                                    multiple = TRUE,
+                                    accept = c("text/csv",
+                                               "text/comma-separated-values,text/plain",
+                                               ".csv")),
+                          textInput("volcano_genes", "Choose a gene:", placeholder = "e.g. CNAG_02780"),
+                          actionButton("volcano_button", "Go!"),                    
+                        ),
+                        mainPanel(
+                          plotOutput("volcanoplot"),
+                          uiOutput("volcanosavebutton"),
+                          helpText("Press Go! after changing the options above")),
+                        
+                      ))),
   
   
   
@@ -175,6 +196,9 @@ server <- function(input, output) {
   
   data3 <- reactive({read.csv(input$file3$datapath, sep = "\t")
     }) 
+  
+  volcano_data <- reactive({read.csv(input$volcano_file$datapath, header = T)
+  })
   ### Load in data from user import END
   
   
@@ -224,8 +248,7 @@ server <- function(input, output) {
   v <- reactiveValues(plot = NULL)
 
   observeEvent(input$button4, {
-   v$plot <- 
-      plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size, input$col_cluster)
+   v$plot <- plotHeatmap(data3(), metadata(), input$gene_list, input$heatmaptext_size, input$col_cluster)
     
   })
   output$heatmap <- renderPlot({
@@ -242,10 +265,7 @@ server <- function(input, output) {
       
   })
   
-  
-  
 
-  
   output$heatmapButton <- renderUI({
     req(input$file3)
     downloadButton("exportHeatmap", "Save plot")
@@ -315,9 +335,52 @@ server <- function(input, output) {
 
   
 
+  ### TAB for volcano plot START  (Under construction!!)
+  
+  
+  vol <- reactiveValues(plot = NULL)
+
+  observeEvent(input$volcano_button, {
+    validate(need(volcano_data(), "Please upload the DESeq2 results (.csv)"))
+    vol$plot <- volcanoplot(volcano_data(),input$volcano_genes)
+
+    
+  })
+  output$volcanoplot <- renderPlot({
+    validate(need(volcano_data(), "Please upload the DESeq2 results (.csv)"))
+    validate(need(vol$plot!="", "Please double check the gene name spelling and press GO!"))
+    vol$plot
+  })
+
+  
+  output$exportvolcanoplot <- downloadHandler(
+    filename = "volcano_plot.pdf",
+    content = function(file){
+      
+      ggsave(file,volcanoplot(volcano_data(),input$volcano_genes))
+      
+    })
+  
+  
+  output$volcanosavebutton <- renderUI({
+    req(input$volcano_data())
+    downloadButton("exportvolcanoplot", "Save plot")
+  })
+  
+  
+  ### TAB for volcano plot END
+  
+  
+  
+  
 
   ### MISC
 
+  
+  
+  
+  
+  
 
   output$exportTemplate <- downloadHandler(
     filename = "metadata.csv",

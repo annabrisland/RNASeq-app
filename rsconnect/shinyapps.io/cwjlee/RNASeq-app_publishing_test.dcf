@@ -1,0 +1,14 @@
+name: RNASeq-app_publishing_test
+title: RNASeq-app_publishing_test
+username:
+account: cwjlee
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7347507
+bundleId: 6417025
+url: https://cwjlee.shinyapps.io/RNASeq-app_publishing_test/
+when: 1666132888.5592
+lastSyncTime: 1666132888.5592
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: analytics.html

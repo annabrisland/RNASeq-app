@@ -17,7 +17,7 @@ library("validate")
 # specify_order2 = "LDOPA_WT"
 # yaxis_label = "nothing here"
 # text_size = 15
-# #   
+#
 #   
 options(repos = BiocManager::repositories())
 plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size, specify_order, specify_order2) {
@@ -30,9 +30,7 @@ plotgene <- function(normalized_counts,metadata, geneid, yaxis_label, text_size,
 
 normalized_counts = normalized_counts[,-2]
 colnames(normalized_counts)[[1]] = "gene_name"
-
 normalized_counts_long <- melt(normalized_counts, id.vars=c("gene_name"))
-
 geneid <- as.data.frame(strsplit(geneid, split = "\\s+"))
 colnames(geneid)[1] <- "NAME"
 
@@ -41,16 +39,17 @@ colnames(geneid)[1] <- "NAME"
 subdata = filter(normalized_counts_long, gene_name %in% geneid$NAME)
 subdata = subdata[order(subdata$gene_name),]
 
-if(is.na(metadata[[2]][1])){
-  
-  subdata$cond <- metadata[[3]]
-  
-} else {
-  
-  subdata$cond <- paste(metadata[[2]],metadata[[3]], sep = "_")
-  
-}
-
+#########################################################################
+if(is.na(metadata[[2]][1])){                                            #
+                                                                        #
+  subdata$cond <- metadata[[3]]                                         #
+                                                                        #
+} else {                                                                # Changing the condition labels based
+                                                                        # on the number of conditions.
+  subdata$cond <- paste(metadata[[2]],metadata[[3]], sep = "_")         # Currently optimized for 2.
+                                                                        #
+}                                                                       #
+#########################################################################
 
 if(specify_order !="" &specify_order2 !="" ){
   

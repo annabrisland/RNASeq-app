@@ -16,7 +16,7 @@ plotHeatmap <- function(id, meta, list, row_text_size, col_cluster) {
 
   
   
-    genes <- as.data.frame(strsplit(list, split = "\\s+"))
+  genes <- as.data.frame(strsplit(list, split = "\\s+"))
   colnames(genes)[1] <- "NAME"
   
   if(list == "") {
@@ -40,24 +40,35 @@ plotHeatmap <- function(id, meta, list, row_text_size, col_cluster) {
   
   SEbulk <- SummarizedExperiment(assays = exp)
   
-  SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = paste(meta[[2]],meta[[3]])))
-  
-if (col_cluster == "TRUE"){
-      dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = TRUE,
-                     show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
-  #, row_names_gp = gpar(fontsize = row_text_size), complex = TRUE     ----this is for trying to change font size for the gene names. Can delete when the feature is done.
-  return(dd)
-  
-  
-} else if(col_cluster == "FALSE"){
-  dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = FALSE,
-                     show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
-  #, row_names_gp = gpar(fontsize = row_text_size), complex = TRUE     ----this is for trying to change font size for the gene names. Can delete when the feature is done.
-  return(dd)
+  #########################################################################
+  if(is.na(meta[[2]][1])){                                                #
+                                                                          #
+    SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = meta[[3]]))
+                                                                          #
+  } else {                                                                # Changing the condition labels based
+                                                                          # on the number of conditions.
+    SCEbulk <- importDittoBulk(x = list(counts = exp), metadata = data.frame("cluster" = paste(meta[[2]],meta[[3]])))
+                                                                          #
+  }                                                                       #
+  #########################################################################
   
   
-}
   
+
+  if (col_cluster == "TRUE"){
+        dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = TRUE,
+                       show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
+    return(dd)
+    
+    
+  } else if(col_cluster == "FALSE"){
+    dd <- dittoHeatmap(SCEbulk, getGenes(SCEbulk), annot.by = c("cluster"), cluster_cols = FALSE,
+                       show_colnames = FALSE, rowv = FALSE, fontsize = row_text_size, scale = "row", scaled.to.max = FALSE)
+    return(dd)
+    
+    
+  }
+    
 
   
 }
