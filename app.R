@@ -6,9 +6,9 @@ library("DT")
 
 # remember to comment these "setwd()" lines out before publishing or else it will break upon deployment
 
-setwd("~/Desktop/RNASeq-app")
+#setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 
@@ -18,7 +18,7 @@ source("filter.R")
 source("plotgene.R")
 source("heatmap.R")
 source("JEC21_to_H99.R")
-#source("volcano_plot.R")
+source("volcano_plot.R")
 
 ui <- fluidPage(
   
