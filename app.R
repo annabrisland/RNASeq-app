@@ -6,7 +6,7 @@ library("DT")
 
 # remember to comment these "setwd()" lines out before publishing or else it will break upon deployment
 
-#setwd("~/Desktop/RNASeq-app")
+setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 #setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
@@ -68,7 +68,7 @@ ui <- fluidPage(
                           numericInput("qvalue", "Filter by q value:", min = 0, max = 0.1, value = 0.001),
                           
                           sliderInput("nodesize", "Filter by gene set size:", min = 0, max = 600, value = c(0, 600)),
-                          textInput("pathway", "Filter by key word:", placeholder = "e.g. mitochondria"),),
+                          textInput("pathway", "Filter by key words:", placeholder = "e.g. mitochondria iron"),),
                         mainPanel(
                           plotOutput("plot1"),
                           uiOutput("plotButton"),
