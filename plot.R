@@ -8,11 +8,15 @@ library("ggplot2")
 
 
 plotNode <- function(id, n, reg, pval, size1, size2, term, pathwyatext_size, qval) {
+  #term <- c("iron mito")
+  #term <- unlist(strsplit(term, split = "\\s+"))
+  #print(term)
   
   if(term == "") {
     dataPlot <- id
   } else {
-    key_values = grep(term,id$GS_DESCR)
+    term <- unlist(strsplit(term, split = "\\s+"))
+    key_values = grep(paste(term, collapse = "|"),id$GS_DESCR)
     dataPlot = id[key_values,]
   }
   

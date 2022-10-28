@@ -17,7 +17,8 @@ tableNode <- function(id, n, reg, pval, size1, size2, term,qval) {
   if(term == "") {
     dataTable <- dataSelect
   } else {
-    key_values = grep(term,dataSelect$GS_DESCR)
+    term <- unlist(strsplit(term, split = "\\s+"))
+    key_values = grep(paste(term, collapse = "|"),dataSelect$GS_DESCR)
     dataTable = dataSelect[key_values,]
   }
 
