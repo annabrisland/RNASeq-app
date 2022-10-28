@@ -8,7 +8,7 @@ library("DT")
 
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 
@@ -22,6 +22,7 @@ source("volcano_plot.R")
 
 ui <- fluidPage(
   
+  tags$head(includeHTML(("analytics.html"))),
   
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
@@ -341,13 +342,13 @@ server <- function(input, output) {
   vol <- reactiveValues(plot = NULL)
 
   observeEvent(input$volcano_button, {
-    validate(need(volcano_data(), "Please upload the DESeq2 results (.csv)"))
+    validate(need(input$volcano_file, "Please upload the DESeq2 results (.csv)"))
     vol$plot <- volcanoplot(volcano_data(),input$volcano_genes)
 
     
   })
   output$volcanoplot <- renderPlot({
-    validate(need(volcano_data(), "Please upload the DESeq2 results (.csv)"))
+    validate(need(input$volcano_file, "Please upload the DESeq2 results (.csv)"))
     validate(need(vol$plot!="", "Please double check the gene name spelling and press GO!"))
     vol$plot
   })
@@ -363,7 +364,7 @@ server <- function(input, output) {
   
   
   output$volcanosavebutton <- renderUI({
-    req(input$volcano_data())
+    req(input$volcano_file)
     downloadButton("exportvolcanoplot", "Save plot")
   })
   
