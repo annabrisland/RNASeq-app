@@ -70,6 +70,7 @@ if(length(geneid$NAME) == 1) {
     ggplot(subdata,aes(x=cond, y= as.numeric(value),fill = cond))+
       geom_point()+
       geom_boxplot()+
+      expand_limits(y = 0)+
       ggtitle(geneid)+
       theme_bw()+
       labs(y=yaxis_label)+
@@ -88,6 +89,7 @@ if(length(geneid$NAME) == 1) {
     ggplot(subdata,aes(x=gene_name, y= as.numeric(value),fill = cond))+
       geom_boxplot()+
       ggtitle(geneid)+
+      expand_limits(y = 0)+
       theme_bw()+
       labs(y=yaxis_label)+
       theme(axis.text.x = element_text(angle = -75),
