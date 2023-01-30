@@ -3,19 +3,20 @@
 library("EnhancedVolcano")
 library("textshaping")
 
-volcanoplot <- function(res, genes){
+volcanoplot <- function(res, genes,FC,pvalue){
 
   res = as.data.frame(res)
   select = genes
   IDS = res$X
-  
+  # FC = 1
+  # pvalue = 0.05
   volplot = EnhancedVolcano(res,
                             x = "log2FoldChange",
                             y = "pvalue",
                             lab = IDS,
-                            pCutoff = 10e-4,
-                            FCcutoff = 2,selectLab = select,
-                            caption = paste0('FC cutoff, 2; p-value cutoff, 10e-4; ',"total = ", nrow(res), " genes"),
+                            pCutoff = pvalue,
+                            FCcutoff = FC,selectLab = select,
+                            caption = paste("FC cutoff, ",FC,"; p-value cutoff; ",pvalue, "total = ", nrow(res),"genes",sep = ""),
                             pointSize = 1,
                             boxedLabels = TRUE,
                             subtitle = "")

@@ -6,9 +6,9 @@ library("DT")
 
 # remember to comment these "setwd()" lines out before publishing or else it will break upon deployment
 
-setwd("~/Desktop/RNASeq-app")
+#setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 
@@ -22,7 +22,7 @@ source("volcano_plot.R")
 
 ui <- fluidPage(
   
-  tags$head(includeHTML(("analytics.html"))),
+  #tags$head(includeHTML(("analytics.html"))),
   
   theme = shinytheme("flatly"),
   navbarPage(title = "RNA-Seq Visualisation",
@@ -151,6 +151,8 @@ ui <- fluidPage(
                                                "text/comma-separated-values,text/plain",
                                                ".csv")),
                           textInput("volcano_genes", "Choose a gene:", placeholder = "e.g. CNAG_02780"),
+                          textInput("FC", "Choose a log2foldchange cutoff:", placeholder = "2"),
+                          textInput("pvalue", "Choose a pvaluecutoff:", placeholder = "0.05"),
                           actionButton("volcano_button", "Go!"),                    
                         ),
                         mainPanel(
@@ -343,7 +345,7 @@ server <- function(input, output) {
 
   observeEvent(input$volcano_button, {
     validate(need(input$volcano_file, "Please upload the DESeq2 results (.csv)"))
-    vol$plot <- volcanoplot(volcano_data(),input$volcano_genes)
+    vol$plot <- volcanoplot(volcano_data(),input$volcano_genes,input$FC,input$pvalue)
 
     
   })
@@ -358,7 +360,7 @@ server <- function(input, output) {
     filename = "volcano_plot.pdf",
     content = function(file){
       
-      ggsave(file,volcanoplot(volcano_data(),input$volcano_genes))
+      ggsave(file,volcanoplot(volcano_data(),input$volcano_genes,input$FC,input$pvalue))
       
     })
   
