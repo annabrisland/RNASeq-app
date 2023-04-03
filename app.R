@@ -1,3 +1,8 @@
+
+options(repos = BiocManager::repositories())
+
+
+
 library("shiny")
 library("tidyverse")
 library("ggplot2")
@@ -8,8 +13,8 @@ library("DT")
 
 #setwd("~/Desktop/RNASeq-app")
 #setwd("C:/Users/clee41/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
-
+#setwd("C:/Users/cwjle/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
+#setwd("C:/Users/Christopher/OneDrive - UBC/Desktop/GradWork/computational tools/RNAseq_app/RNASeq-app")
 
 
 #Loading in reference scripts
@@ -167,7 +172,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-  
+  options(shiny.maxRequestSize=30*1024^2)
 ### File import code  START
   
   output$selectfile <- renderUI({

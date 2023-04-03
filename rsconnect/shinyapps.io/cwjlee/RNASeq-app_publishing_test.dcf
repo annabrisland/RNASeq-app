@@ -5,10 +5,9 @@ account: cwjlee
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 7347507
-bundleId: 6449723
+bundleId: 6996324
 url: https://cwjlee.shinyapps.io/RNASeq-app_publishing_test/
-when: 1666934202.16652
-lastSyncTime: 1666934202.16652
+when: 1679549433.77935
+lastSyncTime: 1679549433.77936
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: analytics.html
